@@ -1,0 +1,29 @@
+{
+    "priority":2,
+    "request": {
+        "method": "POST",
+        "url": "/fees",
+        "bodyPatterns" : [
+           {"matchesJsonPath" : "$[?(@.paymentMethod == 'DEBIT_CARD')]"}
+       ]
+    },
+    "response": {
+        "status": 200,
+             "jsonBody":  [{ 
+                "taxPayerFee":2236,
+                "primaryCiIncurredFee" : 7875,
+                "paymentMethod": "DEBIT_CARD",
+                "touchpoint": "DEBIT",
+                "idBundle": "243564",
+                "bundleName": "test",
+                "bundleDescription": "test",
+                "idCiBundle": "3256435",
+                "idPsp": "243502398"
+             
+            }],
+        "chunkedDribbleDelay": {
+            "numberOfChunks": 5,
+            "totalDuration": 3000000
+        }
+    }
+}

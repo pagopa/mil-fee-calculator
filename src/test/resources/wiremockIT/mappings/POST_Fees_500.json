@@ -1,0 +1,17 @@
+{	
+	"priority":1,
+    "request": {
+        "method": "POST",
+        "url": "/fees",
+		"bodyPatterns" : [
+				{"matchesJsonPath" : "$[?(@.paymentMethod == 'CASH')]"}
+		]
+    },
+    "response": {
+        "status": 500,
+	    "headers": {
+            "Content-Type": "application/json"
+        }
+        
+    }
+}

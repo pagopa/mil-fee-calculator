@@ -1,18 +1,32 @@
 package it.gov.pagopa.swclient.mil.feecalculator.bean;
 
-public class FeeResponse {
-	private String fee;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
-	public String getFee() {
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
+public class FeeResponse {
+	@NotNull
+	@Min(value = 1)
+	@Max(value = 99999999999L)
+	private Long fee;
+
+	public Long getFee() {
 		return fee;
 	}
 
-	public void setFee(String fee) {
+	public void setFee(Long fee) {
 		this.fee = fee;
 	}
 
 	@Override
 	public String toString() {
-		return "FeeResponse [fee=" + fee + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("FeeResponse [fee=");
+		builder.append(fee);
+		builder.append("]");
+		return builder.toString();
 	}
 }
