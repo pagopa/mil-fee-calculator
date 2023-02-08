@@ -5,6 +5,8 @@ package it.gov.pagopa.swclient.mil.feecalculator.resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -19,6 +21,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import io.quarkus.logging.Log;
@@ -26,19 +31,25 @@ import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.swclient.mil.bean.CommonHeader;
 import it.gov.pagopa.swclient.mil.bean.Errors;
 import it.gov.pagopa.swclient.mil.feecalculator.ErrorCode;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeRequest;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeResponse;
+import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeResponse;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.gec.FeesGecRequest;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.gec.TransferForFeeService;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecTransfer;
 import it.gov.pagopa.swclient.mil.feecalculator.client.FeeService;
 import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfRepository;
 
 
 @Path("/fees")
 public class FeeCalculatorResource {
-	
+
+	@ConfigProperty(name = "gec.paymentmethod.map")
+	Map<String, String> gecPaymentMethodMap;
+
+	@ConfigProperty(name = "gec.touchpoint.map")
+	Map<String, String> gecTouchpointMap;
+
 	@RestClient
 	private FeeService feeService;
 	
@@ -47,93 +58,125 @@ public class FeeCalculatorResource {
 	
 	/**
 	 * API to retrieve the commissions fees. 
-	 * It retrieves the idPsp value from the database and using it to build a request to GEC service to retrieve the Fees.
-	 * The response is parsed and manage only the fee value, mapping it in the API response.
+	 * It retrieves the PSP id value from the database and invokes the GEC service to retrieve the fees.
+	 *
 	 * @param headers a set of mandatory headers
-	 * @param body containing the JSon data
-	 * @return the fee in JSson format.
+	 * @param getFeeRequest the {@link GetFeeRequest} containing the payment notices for which to retrieve the fees
+	 * @return a {@link GetFeeResponse} instance containing the fee data from GEC
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers, @Valid FeeRequest body) {
-		Log.debugf("getFee - Input parameters: %s, body %s", headers, body);
+	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers, @Valid GetFeeRequest getFeeRequest) {
+		Log.debugf("getFee - Input parameters: %s, body %s", headers, getFeeRequest);
 		
-		return findIdPsp(body, headers.getAcquirerId())
-				.onFailure().transform(t-> 
-				{
-					Log.errorf(t, "[%s] Internal server errorError retrieving the idPsp value from DB", ErrorCode.ERROR_RETRIEVING_ID_PSP);
+		return retrievePspConfiguration(getFeeRequest, headers.getAcquirerId(), headers.getChannel())
+				.onFailure().transform(t -> {
+					Log.errorf(t, "[%s] Error while retrieving the psp configuration from the DB", ErrorCode.ERROR_RETRIEVING_ID_PSP);
 					return new InternalServerErrorException(Response
 							.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(new Errors(List.of(ErrorCode.ERROR_RETRIEVING_ID_PSP)))
 							.build());
 				})
-				.chain( p ->{
-					Log.debugf("Calling GEC Service with RequestId [%s] and body [%s]", headers.getRequestId(), p.toString());
-					return feeService.getFees(p, headers.getRequestId())
-						.onFailure().transform(f -> {
-								Log.errorf(f, "[%s] Error while retrieving fees ", ErrorCode.ERROR_RETRIEVING_FEES);
+				.chain(gecRequest -> {
+					Log.debugf("Calling GEC Service with RequestId [%s] and body [%s]", headers.getRequestId(), gecRequest);
+					return feeService.getFees(gecRequest, headers.getRequestId())
+							.onFailure().transform(f -> {
+								Log.errorf(f, "[%s] Error while calling the GEC getFees service", ErrorCode.ERROR_RETRIEVING_FEES);
 								return new InternalServerErrorException(Response
-									.status(Status.INTERNAL_SERVER_ERROR)
-									.entity(new Errors(List.of(ErrorCode.ERROR_RETRIEVING_FEES)))
-									.build());
-						})
-						.map(f -> {
-							
-							FeeResponse response = new FeeResponse();
-							//for the POC only one element is returned
-							response.setFee(f.get(0).getTaxPayerFee());
-							Log.debugf("getFee - response: %s", response.toString());
-							return Response.status(Status.OK).entity(response).build();
-						});
+										.status(Status.INTERNAL_SERVER_ERROR)
+										.entity(new Errors(List.of(ErrorCode.ERROR_RETRIEVING_FEES)))
+										.build());
+							})
+							.map(getFeesResponse -> {
+								GetFeeResponse response = new GetFeeResponse();
+								response.setFee(chooseFee(getFeesResponse, getFeeRequest.getPaymentMethod(), headers.getChannel()));
+								Log.debugf("getFee - response: %s", response);
+								return Response.status(Status.OK).entity(response).build();
+							});
 				});
 	
 	}
-	
+
 	/**
-	 * Maps the request to send to GEC
-	 * @param body
-	 * @param idPsp
-	 * @return FeesGecRequest
+	 * Select the correct fee to return to the client based on the payment method and channel passed in request
+	 *
+	 * @param getFeesResponse the response of the getFees API on GEC
+	 * @param paymentMethod the payment method passed in request by the client
+	 * @param channel the channel passed in the headers by the client
+	 * @return the fee value
 	 */
-	private FeesGecRequest mapServiceBody(FeeRequest body, String idPsp ) {
-		//for the POC only one value in the body is considered
-		Notice notice = body.getNotices().get(0);
-		FeesGecRequest feesGecRequest = new FeesGecRequest();
-		List<String> idPspList = new ArrayList<>();
-		idPspList.add(idPsp);
-		
-		feesGecRequest.setIdPspList(null);
-		feesGecRequest.setPaymentAmount(notice.getAmount());
-		feesGecRequest.setPrimaryCreditorIntitution(notice.getPaTaxCode());
-		feesGecRequest.setPaymentMethod(body.getPaymentMethod());
-		List<TransferForFeeService> transferList = new ArrayList<>();
-		for (Transfer transfer : notice.getTransfers()) {
-			TransferForFeeService t = new TransferForFeeService();
-			t.setCreditorInstitution(transfer.getPaTaxCode());
-			t.setTranferCategory(transfer.getCategory());
-			transferList.add(t);
+	private Long chooseFee(List<GecGetFeesResponse> getFeesResponse, String paymentMethod, String channel) {
+
+		// TODO: select correct fee by channel and paymentMethod
+
+		Optional<GecGetFeesResponse> getFeeResponseOpt =  getFeesResponse.stream().filter(fee ->
+				(StringUtils.equals(fee.getPaymentMethod(), gecPaymentMethodMap.getOrDefault(paymentMethod, "ANY")) &&
+						StringUtils.equals(fee.getTouchpoint(), gecTouchpointMap.getOrDefault(channel, "ANY")))).findFirst();
+
+		if (getFeeResponseOpt.isPresent()) return getFeeResponseOpt.get().getTaxPayerFee();
+		else {
+			// search for a default
+			getFeeResponseOpt =  getFeesResponse.stream().filter(fee ->
+					(StringUtils.equals(fee.getPaymentMethod(), "ANY") && StringUtils.equals(fee.getTouchpoint(), "ANY"))).findFirst();
+			if (getFeeResponseOpt.isPresent()) return getFeeResponseOpt.get().getTaxPayerFee();
+			else throw new NotFoundException();
 		}
-		feesGecRequest.setTransferList(transferList);
-		return feesGecRequest;
+
+	}
+
+	/**
+	 * Create the request to be sent to GEC to retrieve the fees
+	 *
+	 * @param getFeeRequest the {@link GetFeeRequest} received by the client
+	 * @param pspId the identifier of the PSP
+	 * @return the {@link GecGetFeesRequest} to be sent to GE
+	 */
+	private GecGetFeesRequest createGecGetFeeRequest(GetFeeRequest getFeeRequest, String pspId, String channel) {
+
+		Notice notice = getFeeRequest.getNotices().get(0); // FIXME: change logic when or if GEC will expose the cart
+
+		List<String> idPspList = new ArrayList<>();
+		idPspList.add(pspId);
+
+		List<GecTransfer> transferList = new ArrayList<>();
+		for (Transfer transfer : notice.getTransfers()) {
+			GecTransfer gecTransfer = new GecTransfer();
+			gecTransfer.setCreditorInstitution(transfer.getPaTaxCode());
+			if (StringUtils.isNotEmpty(transfer.getCategory())) {
+				// the closePayment API of the node does not return a category
+				// so the mil-payment-notice return an empty string
+				// and will not forward this value to the GEC
+				gecTransfer.setTransferCategory(transfer.getCategory());
+			}
+			transferList.add(gecTransfer);
+		}
+
+		GecGetFeesRequest gecGetFeesRequest = new GecGetFeesRequest();
+		gecGetFeesRequest.setIdPspList(idPspList);
+		gecGetFeesRequest.setPaymentAmount(notice.getAmount());
+		gecGetFeesRequest.setPrimaryCreditorInstitution(notice.getPaTaxCode());
+		// remapping paymentMethod and touchpoint based on property
+		gecGetFeesRequest.setPaymentMethod(gecPaymentMethodMap.getOrDefault(getFeeRequest.getPaymentMethod(), "ANY"));
+		gecGetFeesRequest.setTouchpoint(gecTouchpointMap.getOrDefault(channel, "ANY"));
+		gecGetFeesRequest.setTransferList(transferList);
+
+		return gecGetFeesRequest;
 	}
 	
 	/**
-	 * Retrieves the idPsp from the database.
+	 * Retrieves the identifier of the PSP from the database.
 	 * If the value is not present return an exception.
-	 * Otherwise it maps the request to send to the GEC
-	 * @param body
-	 * @param acquirerId
-	 * @return the FeesGecRequest to send to the GEC
+	 * Otherwise, it creates the request to GEC and returns it as a Uni
+	 *
+	 * @param getFeeRequest the request received from the client
+	 * @param acquirerId the acquirer id received in the headers
+	 * @return an {@link Uni} emitting the {@link GecGetFeesRequest}
 	 */
-	private Uni<FeesGecRequest> findIdPsp(FeeRequest body,String acquirerId) {
+	private Uni<GecGetFeesRequest> retrievePspConfiguration(GetFeeRequest getFeeRequest, String acquirerId, String channel) {
 		Log.debugf("findIdPspList - find idPsp by AcquirerId : [%s]", acquirerId);
     	return pspConfRepository.findByIdOptional(acquirerId)
-		 .onItem().transform(o -> o.orElseThrow(() -> 
-		 			new NotFoundException(Response
-						.status(Status.NOT_FOUND)
-						.build())
-				 ))
-		 .map(t -> mapServiceBody(body,t.pspConfiguration.getPspId())) ; 
+		 .onItem().transform(o -> o.orElseThrow(NotFoundException::new))
+		 .map(t -> createGecGetFeeRequest(getFeeRequest, t.pspConfiguration.getPspId(), channel)) ;
 	}
 }

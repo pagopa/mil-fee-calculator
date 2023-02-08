@@ -6,15 +6,19 @@ import javax.validation.constraints.Pattern;
 
 import it.gov.pagopa.swclient.mil.feecalculator.ErrorCode;
 
+/**
+ * Detail of a transfer
+ */
 public class Transfer {
-	/*
+
+	/**
 	 * Tax code of the creditor company
 	 */
-	@NotNull(message = "[" + ErrorCode.TRANSFERS_PATAXCODE_MUST_NOT_BE_NULL + "] transfers.paTaxCode must not be null")
-	@Pattern(regexp = "^\\d{11}$", message = "[" + ErrorCode.TRANSFERS_PATAXCODE_MUST_MATCH_REGEXP + "] paxCode in the tranfer list must match \"{regexp}\"")
+	@NotNull(message = "[" + ErrorCode.TRANSFERS_PA_TAX_CODE_MUST_NOT_BE_NULL + "] transfer.paTaxCode must not be null")
+	@Pattern(regexp = "^\\d{11}$", message = "[" + ErrorCode.TRANSFERS_PA_TAX_CODE_MUST_MATCH_REGEXP + "] transfer.paTaxCode list must match \"{regexp}\"")
 	private String paTaxCode;
 	
-	/*
+	/**
 	 * Transfer category
 	 */
 	@NotNull(message = "[" + ErrorCode.TRANSFERS_CATEGORY_MUST_NOT_BE_NULL + "] transfers.category must not be null")

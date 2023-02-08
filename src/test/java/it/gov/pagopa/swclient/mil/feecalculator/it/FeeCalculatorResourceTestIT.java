@@ -15,7 +15,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import it.gov.pagopa.swclient.mil.feecalculator.ErrorCode;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.PaymentMethods;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
@@ -37,7 +37,7 @@ class FeeCalculatorResourceTestIT {
 	
 	@Test
 	void testGetFees_200() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Transfer transfer = new Transfer();
@@ -80,7 +80,7 @@ class FeeCalculatorResourceTestIT {
 	
 	@Test
 	void testGetFee_500_communicationWithGecfailed() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.CASH.toString());
 		
 		Transfer transfer = new Transfer();
@@ -130,7 +130,7 @@ class FeeCalculatorResourceTestIT {
 	
 	@Test
 	void testGetFee_500_pspNotFound() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Transfer transfer = new Transfer();
@@ -173,7 +173,7 @@ class FeeCalculatorResourceTestIT {
 	
 	@Test
 	void testGetFee_500_TimeoutCallingGec() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.DEBIT_CARD.toString());
 		
 		Transfer transfer = new Transfer();

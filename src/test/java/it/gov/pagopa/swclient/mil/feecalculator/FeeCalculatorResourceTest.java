@@ -20,12 +20,12 @@ import io.quarkus.test.junit.mockito.InjectMock;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.smallrye.mutiny.Uni;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.PaymentMethods;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.gec.FeeGecResponse;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.gec.FeesGecRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.client.FeeService;
 import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfEntity;
 import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfRepository;
@@ -52,7 +52,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_200() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Transfer transfer = new Transfer();
@@ -70,20 +70,20 @@ class FeeCalculatorResourceTest {
 		notice.setTransfers(transfers);
 		bodyRequest.setNotices(notices);
 		
-		FeeGecResponse feeGecResponse = new FeeGecResponse();
-		feeGecResponse.setBundleDescription("description");
-		feeGecResponse.setBundleName("name");
-		feeGecResponse.setIdBundle("325643");
-		feeGecResponse.setIdCiBundle("32523");
-		feeGecResponse.setIdPsp("90809792");
-		feeGecResponse.setPaymentMethod(PaymentMethods.BANK_ACCOUNT.toString());
-		feeGecResponse.setPrimaryCiIncurredFee(1000);
-		feeGecResponse.setTaxPayerFee(100);
-		feeGecResponse.setTouchpoint("ATM");
+		GecGetFeesResponse gecGetFeesResponse = new GecGetFeesResponse();
+		gecGetFeesResponse.setBundleDescription("description");
+		gecGetFeesResponse.setBundleName("name");
+		gecGetFeesResponse.setIdBundle("325643");
+		gecGetFeesResponse.setIdCiBundle("32523");
+		gecGetFeesResponse.setIdPsp("90809792");
+		gecGetFeesResponse.setPaymentMethod(PaymentMethods.BANK_ACCOUNT.toString());
+		gecGetFeesResponse.setPrimaryCiIncurredFee(1000);
+		gecGetFeesResponse.setTaxPayerFee(100);
+		gecGetFeesResponse.setTouchpoint("ATM");
 		
 		
-		List<FeeGecResponse> listOfFeeServiceResponse = new ArrayList<>();
-		listOfFeeServiceResponse.add(feeGecResponse);
+		List<GecGetFeesResponse> listOfFeeServiceResponse = new ArrayList<>();
+		listOfFeeServiceResponse.add(gecGetFeesResponse);
 		
 		PspConfiguration pspConfiguration = new PspConfiguration();
 		pspConfiguration.setPspId("AGID_01");
@@ -94,7 +94,7 @@ class FeeCalculatorResourceTest {
 		pspConfEntity.pspConfiguration = pspConfiguration;
 		
 		Mockito
-			.when(feeService.getFees(Mockito.any(FeesGecRequest.class), Mockito.any(String.class)))
+			.when(feeService.getFees(Mockito.any(GecGetFeesRequest.class), Mockito.any(String.class)))
 			.thenReturn(Uni.createFrom().item(listOfFeeServiceResponse));
 		
 		Mockito
@@ -123,7 +123,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_500_CommunicationWithGecfailed() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.CASH.toString());
 		
 		Transfer transfer = new Transfer();
@@ -150,7 +150,7 @@ class FeeCalculatorResourceTest {
 		pspConfEntity.pspConfiguration = pspConfiguration;
 		
 		Mockito
-			.when(feeService.getFees(Mockito.any(FeesGecRequest.class), Mockito.any(String.class)))
+			.when(feeService.getFees(Mockito.any(GecGetFeesRequest.class), Mockito.any(String.class)))
 			.thenReturn(Uni.createFrom().failure(new InternalServerErrorException()));
 		
 		Mockito
@@ -180,7 +180,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_500_pspNotFound() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Transfer transfer = new Transfer();
@@ -198,19 +198,19 @@ class FeeCalculatorResourceTest {
 		notice.setTransfers(transfers);
 		bodyRequest.setNotices(notices);
 		
-		FeeGecResponse feeGecResponse = new FeeGecResponse();
-		feeGecResponse.setBundleDescription("description");
-		feeGecResponse.setBundleName("name");
-		feeGecResponse.setIdBundle("325643");
-		feeGecResponse.setIdCiBundle("32523");
-		feeGecResponse.setIdPsp("90809792");
-		feeGecResponse.setPaymentMethod(PaymentMethods.BANK_ACCOUNT.toString());
-		feeGecResponse.setPrimaryCiIncurredFee(1000);
-		feeGecResponse.setTaxPayerFee(100);
-		feeGecResponse.setTouchpoint("ATM");
+		GecGetFeesResponse gecGetFeesResponse = new GecGetFeesResponse();
+		gecGetFeesResponse.setBundleDescription("description");
+		gecGetFeesResponse.setBundleName("name");
+		gecGetFeesResponse.setIdBundle("325643");
+		gecGetFeesResponse.setIdCiBundle("32523");
+		gecGetFeesResponse.setIdPsp("90809792");
+		gecGetFeesResponse.setPaymentMethod(PaymentMethods.BANK_ACCOUNT.toString());
+		gecGetFeesResponse.setPrimaryCiIncurredFee(1000);
+		gecGetFeesResponse.setTaxPayerFee(100);
+		gecGetFeesResponse.setTouchpoint("ATM");
 		
-		List<FeeGecResponse> listOfFeeServiceResponse = new ArrayList<>();
-		listOfFeeServiceResponse.add(feeGecResponse);
+		List<GecGetFeesResponse> listOfFeeServiceResponse = new ArrayList<>();
+		listOfFeeServiceResponse.add(gecGetFeesResponse);
 		
 		PspConfiguration pspConfiguration = new PspConfiguration();
 		pspConfiguration.setPspId("AGID_01");
@@ -248,7 +248,7 @@ class FeeCalculatorResourceTest {
 	//Tests mandatory fields
 	@Test
 	void testGetFee_400_PaymentMethodMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		
 		Mockito
 			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
@@ -271,13 +271,13 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(400, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.PAYMENT_METOD_MUST_NOT_BE_NULL));
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.PAYMENT_METHOD_MUST_NOT_BE_NULL));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	@Test
 	void testGetFee_400_PaymentMethodInvalid() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod("PAY");
 		
 		Mockito
@@ -307,7 +307,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_NoticeMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod("PAY");
 		
 		Mockito
@@ -337,7 +337,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_NoticesExceeded() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod("PAY");
 		Notice notice = new Notice();
 		
@@ -378,7 +378,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_AmountMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		
@@ -413,7 +413,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_AmountExeedMinSize() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(0L);
@@ -449,7 +449,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_AmountExeedMaxSize() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(999999999999L);
@@ -479,13 +479,13 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(400, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.AMOUNT_EXEED_MAX_VALUE));
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.AMOUNT_EXCEED_MAX_VALUE));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	@Test
 	void testGetFee_400_PaTaxCodeMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -515,13 +515,13 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(400, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.PATAXCODE_MUST_NOT_BE_NULL));
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.PA_TAX_CODE_MUST_NOT_BE_NULL));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	@Test
 	void testGetFee_400_PaTaxCodeNotValid() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -552,13 +552,13 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(400, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.PATAXCODE_MUST_MATCH_REGEXP));
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.PA_TAX_CODE_MUST_MATCH_REGEXP));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	@Test
 	void testGetFee_400_TransfersMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -594,7 +594,7 @@ class FeeCalculatorResourceTest {
 	}
 	@Test
 	void testGetFee_400_TransfersExeed() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -642,7 +642,7 @@ class FeeCalculatorResourceTest {
 
 	@Test
 	void testGetFee_400_TransfersPaTaxCodeMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -679,13 +679,13 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(400, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.TRANSFERS_PATAXCODE_MUST_NOT_BE_NULL));
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.TRANSFERS_PA_TAX_CODE_MUST_NOT_BE_NULL));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	@Test
 	void testGetFee_400_TransfersPaTaxCodeInvalid() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -723,13 +723,13 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(400, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.TRANSFERS_PATAXCODE_MUST_MATCH_REGEXP));
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.TRANSFERS_PA_TAX_CODE_MUST_MATCH_REGEXP));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	@Test
 	void testGetFee_400_TransfersCategoryMandatory() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -773,7 +773,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_TransfersCategoryInvalid() {
-		FeeRequest body = new FeeRequest();
+		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
 		notice.setAmount(100L);
@@ -819,7 +819,7 @@ class FeeCalculatorResourceTest {
 	//TEST headers fields
 	@Test
 	void testGetFee_400_RequestIdMandatory() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -844,7 +844,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_RequestIdNotValid() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -870,7 +870,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_VersionNotValid() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -896,7 +896,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_VersionExceed() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -922,7 +922,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_AcquirerIdMandatory() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -947,7 +947,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_AcquirerIdNotValid() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -973,7 +973,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_ChannelMandatory() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -998,7 +998,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_ChannelNotValid() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -1024,7 +1024,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_TerminalIdMandatory() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
@@ -1048,7 +1048,7 @@ class FeeCalculatorResourceTest {
 	}
 	@Test
 	void testGetFee_400_TerminalIdNotValid() {
-		FeeRequest bodyRequest = new FeeRequest();
+		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
 		Response response = given()
