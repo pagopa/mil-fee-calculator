@@ -1,4 +1,4 @@
-package it.gov.pagopa.swclient.mil.feecalculator;
+package it.gov.pagopa.swclient.mil.feecalculator.it.resource;
 
 import java.util.Iterator;
 import java.util.Map;

@@ -7,8 +7,14 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 @MongoEntity(database = "mil", collection = "pspconf")
 public class PspConfEntity {
 
+	/*
+	 * 
+	 */
 	@BsonId
 	public String acquirerId;
 
+	/*
+	 * 
+	 */
 	public PspConfiguration pspConfiguration;
 }

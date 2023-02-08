@@ -13,10 +13,16 @@ public class FeeResponse {
 	@Max(value = 99999999999L)
 	private Long fee;
 
+	/**
+	 * @return the fee
+	 */
 	public Long getFee() {
 		return fee;
 	}
 
+	/**
+	 * @param fee the fee to set
+	 */
 	public void setFee(Long fee) {
 		this.fee = fee;
 	}

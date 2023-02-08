@@ -36,6 +36,6 @@ public final class ErrorCode {
 	
 		
 	private ErrorCode() {
-		
+		// This class cannot be instantiated!
 	}
 }

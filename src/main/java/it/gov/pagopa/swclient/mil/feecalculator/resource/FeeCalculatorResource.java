@@ -30,8 +30,8 @@ import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeResponse;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
-import it.gov.pagopa.swclient.mil.feecalculator.bean.TransferForFeeService;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.gec.FeesGecRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.bean.gec.TransferForFeeService;
 import it.gov.pagopa.swclient.mil.feecalculator.client.FeeService;
 import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfRepository;
 

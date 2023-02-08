@@ -1,4 +1,4 @@
-package it.gov.pagopa.swclient.mil.feecalculator;
+package it.gov.pagopa.swclient.mil.feecalculator.it;
 
 import static io.restassured.RestAssured.given;
 
@@ -14,12 +14,15 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import it.gov.pagopa.swclient.mil.feecalculator.ErrorCode;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.FeeRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.PaymentMethods;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
 import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfEntity;
 import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfiguration;
+import it.gov.pagopa.swclient.mil.feecalculator.it.resource.Initializer;
+import it.gov.pagopa.swclient.mil.feecalculator.it.resource.MongoTestResource;
 import it.gov.pagopa.swclient.mil.feecalculator.resource.FeeCalculatorResource;
 
 @QuarkusIntegrationTest
