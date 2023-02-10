@@ -70,6 +70,15 @@ public class FeeCalculatorResource {
 	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers, @Valid GetFeeRequest getFeeRequest) {
 		Log.debugf("getFee - Input parameters: %s, body %s", headers, getFeeRequest);
 		
+		Log.debugf("---------------------------------------");
+		gecPaymentMethodMap.forEach((key,value) -> {
+			Log.debugf("gecPaymentMethodMap - key: %s - value: %s", key, value);
+		});
+		Log.debugf("---------------------------------------");
+		gecTouchpointMap.forEach((key,value) -> {
+			Log.debugf("gecTouchpointMap - key: %s - value: %s", key, value);
+		});
+		Log.debugf("---------------------------------------");
 		return retrievePspConfiguration(getFeeRequest, headers.getAcquirerId(), headers.getChannel())
 				.onFailure().transform(t -> {
 					Log.errorf(t, "[%s] Error while retrieving the psp configuration from the DB", ErrorCode.ERROR_RETRIEVING_ID_PSP);
@@ -109,7 +118,7 @@ public class FeeCalculatorResource {
 	private Long chooseFee(List<GecGetFeesResponse> getFeesResponse, String paymentMethod, String channel) {
 
 		// TODO: select correct fee by channel and paymentMethod
-
+		Log.debugf("Choose fee to return to the client ");
 		Optional<GecGetFeesResponse> getFeeResponseOpt =  getFeesResponse.stream().filter(fee ->
 				(StringUtils.equals(fee.getPaymentMethod(), gecPaymentMethodMap.getOrDefault(paymentMethod, "ANY")) &&
 						StringUtils.equals(fee.getTouchpoint(), gecTouchpointMap.getOrDefault(channel, "ANY")))).findFirst();
@@ -120,7 +129,13 @@ public class FeeCalculatorResource {
 			getFeeResponseOpt =  getFeesResponse.stream().filter(fee ->
 					(StringUtils.equals(fee.getPaymentMethod(), "ANY") && StringUtils.equals(fee.getTouchpoint(), "ANY"))).findFirst();
 			if (getFeeResponseOpt.isPresent()) return getFeeResponseOpt.get().getTaxPayerFee();
-			else throw new NotFoundException();
+			else {
+				Log.errorf("[%s] Error choosing fee response ",ErrorCode.ERROR_CHOOSING_FEE_RESPONSE);
+				throw new InternalServerErrorException(Response
+					.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(new Errors(List.of(ErrorCode.ERROR_CHOOSING_FEE_RESPONSE)))
+					.build());
+			}
 		}
 
 	}

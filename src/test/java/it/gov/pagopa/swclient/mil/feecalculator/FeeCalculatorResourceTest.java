@@ -76,10 +76,10 @@ class FeeCalculatorResourceTest {
 		gecGetFeesResponse.setIdBundle("325643");
 		gecGetFeesResponse.setIdCiBundle("32523");
 		gecGetFeesResponse.setIdPsp("90809792");
-		gecGetFeesResponse.setPaymentMethod(PaymentMethods.BANK_ACCOUNT.toString());
+		gecGetFeesResponse.setPaymentMethod("ANY");
 		gecGetFeesResponse.setPrimaryCiIncurredFee(1000);
 		gecGetFeesResponse.setTaxPayerFee(100);
-		gecGetFeesResponse.setTouchpoint("ATM");
+		gecGetFeesResponse.setTouchpoint("ANY");
 		
 		
 		List<GecGetFeesResponse> listOfFeeServiceResponse = new ArrayList<>();
