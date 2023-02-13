@@ -89,7 +89,7 @@ class FeeCalculatorResourceTestIT {
 		
 		Notice notice = new Notice();
 		notice.setAmount(1000L);
-		notice.setPaTaxCode("15376371009");
+		notice.setPaTaxCode("44476371009");
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		
@@ -182,7 +182,7 @@ class FeeCalculatorResourceTestIT {
 		
 		Notice notice = new Notice();
 		notice.setAmount(1000L);
-		notice.setPaTaxCode("15376371009");
+		notice.setPaTaxCode("55576371009");
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		

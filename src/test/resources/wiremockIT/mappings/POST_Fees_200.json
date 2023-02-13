@@ -8,8 +8,8 @@
         "jsonBody":  [{ 
 			"taxPayerFee":1236,
 			"primaryCiIncurredFee" : 7875,
-			"paymentMethod": "CASH",
-			"touchpoint": "CASH",
+			"paymentMethod": "ANY",
+			"touchpoint": "ANY",
 			"idBundle": "243564",
 			"bundleName": "test",
 			"bundleDescription": "test",

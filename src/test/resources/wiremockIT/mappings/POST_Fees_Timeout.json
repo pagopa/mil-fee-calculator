@@ -4,7 +4,8 @@
         "method": "POST",
         "url": "/fees",
         "bodyPatterns" : [
-           {"matchesJsonPath" : "$[?(@.paymentMethod == 'DEBIT_CARD')]"}
+           {"matchesJsonPath" : "$[?(@.primaryCreditorInstitution == '55576371009')]"}
+		    
        ]
     },
     "response": {
@@ -12,8 +13,8 @@
              "jsonBody":  [{ 
                 "taxPayerFee":2236,
                 "primaryCiIncurredFee" : 7875,
-                "paymentMethod": "DEBIT_CARD",
-                "touchpoint": "DEBIT",
+                "paymentMethod": "ANY",
+                "touchpoint": "ANY",
                 "idBundle": "243564",
                 "bundleName": "test",
                 "bundleDescription": "test",
