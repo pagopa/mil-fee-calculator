@@ -59,11 +59,13 @@ public class GetFeeRequest {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("GetFeeRequest{");
-		sb.append("paymentMethod='").append(paymentMethod).append('\'');
-		sb.append(", notices=").append(notices);
-		sb.append('}');
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("GetFeeRequest [paymentMethod=");
+		builder.append(paymentMethod);
+		builder.append(", notices=");
+		builder.append(notices);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

@@ -91,15 +91,20 @@ public class PspConfiguration {
 		this.pspPassword = pspPassword;
 	}
 
-
+	
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("PspConfiguration{");
-		sb.append("pspId='").append(pspId).append('\'');
-		sb.append(", pspBroker='").append(pspBroker).append('\'');
-		sb.append(", idChannel='").append(idChannel).append('\'');
-		sb.append(", pspPassword='").append(pspPassword).append('\'');
-		sb.append('}');
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("PspConfiguration [pspId=");
+		builder.append(pspId);
+		builder.append(", pspBroker=");
+		builder.append(pspBroker);
+		builder.append(", idChannel=");
+		builder.append(idChannel);
+		builder.append(", pspPassword=");
+		builder.append(pspPassword);
+		builder.append("]");
+		return builder.toString();
 	}
+
 }
