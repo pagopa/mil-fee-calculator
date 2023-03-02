@@ -1,0 +1,2126 @@
+{
+	"info": {
+		"_postman_id": "15e7c840-2048-4169-a880-cc4f40087a78",
+		"name": "6. Fee Calculator Service",
+		"description": "Test di integrazione per il microservizio mil-fee-calculator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2465946"
+	},
+	"item": [
+		{
+			"name": "1. Validazione dati",
+			"item": [
+				{
+					"name": "PaymentMethod nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000002\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PaymentMethod non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000001\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"BANK\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notices nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000003\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\"\r\n  \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Notices exceeded size",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000004\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 123456,\r\n      \"paTaxCode\": \"11116371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"11116371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 223456,\r\n      \"paTaxCode\": \"22226371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"22226371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 333456,\r\n      \"paTaxCode\": \"33336371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"33336371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 553456,\r\n      \"paTaxCode\": \"55556371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"55556371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 663456,\r\n      \"paTaxCode\": \"66666371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"66666371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Amount nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000005\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Amount supera valore min",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000006\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 0,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Amount supera valore max",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000007\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 199999999999,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PaTaxCode nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000009\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PaTaxCode non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000008\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989769690032\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00700000A\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"15376371009\"\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers paTaxCode nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00700000E\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"category\": \"KTM\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers paTaxCode non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00700000F\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"1537637100989908762384629\",\r\n          \"category\": \"KTM\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers category nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000010\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"1537637100989\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfers category non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000011\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"1537637100989\",\r\n          \"category\": \"KT°M\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"properties\": {",
+							"    \"errors\": {",
+							"      \"type\": \"array\"",
+							"    }",
+							"  }",
+							"};",
+							"",
+							"pm.test('Schema is valid', function() {",
+							"  pm.response.to.have.jsonSchema(schema);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Validazione headers",
+			"item": [
+				{
+					"name": "RequestId nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000001\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestId non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000002\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "131///00=",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Version non valida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000004\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "pppL",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Version size non valida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000003\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay78237829748274",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AcquirerId nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000005\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AcquirerId non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000006\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "ssk23",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000007\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Channel non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000008\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "AATTMM",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MerchantId nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00000000B\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "POS",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MerchantId non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00000000C\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "POS",
+								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "234-234-234",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TerminalId nullo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"000000009\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "TerminalId non valido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00000000A\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "13---..99",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Richiesta Fee",
+			"item": [
+				{
+					"name": "GetFee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Body matches string\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"fee\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFee psp id non trovato",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"00700000D\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "1111111",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "mil_payment_notice_api_version",
+			"value": "1.0.0",
+			"type": "string"
+		},
+		{
+			"key": "acquirer_id",
+			"value": "4585625",
+			"type": "string"
+		},
+		{
+			"key": "channel",
+			"value": "POS",
+			"type": "string"
+		},
+		{
+			"key": "pa_tax_code",
+			"value": "77777777777",
+			"type": "string"
+		},
+		{
+			"key": "notice_number",
+			"value": "302051234567890125",
+			"type": "string"
+		},
+		{
+			"key": "terminal_id",
+			"value": "4585625",
+			"type": "string"
+		}
+	]
+}
