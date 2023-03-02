@@ -3,29 +3,6 @@
  */
 package it.gov.pagopa.swclient.mil.feecalculator.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import it.gov.pagopa.swclient.mil.bean.CommonHeader;
@@ -35,10 +12,32 @@ import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeResponse;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecTransfer;
 import it.gov.pagopa.swclient.mil.feecalculator.client.FeeService;
-import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfRepository;
+import it.gov.pagopa.swclient.mil.feecalculator.client.MilRestService;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.AcquirerConfiguration;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecTransfer;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.PspConfiguration;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
+
+import javax.validation.Valid;
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Path("/fees")
@@ -51,14 +50,14 @@ public class FeeCalculatorResource {
 	Map<String, String> gecTouchpointMap;
 
 	@RestClient
-	private FeeService feeService;
+	FeeService feeService;
 	
-	@Inject
-	PspConfRepository pspConfRepository;
+	@RestClient
+	MilRestService milRestService;
 	
 	/**
 	 * API to retrieve the commissions fees. 
-	 * It retrieves the PSP id value from the database and invokes the GEC service to retrieve the fees.
+	 * It retrieves the PSP id value from an API exposed by MIL and invokes the GEC service to retrieve the fees.
 	 *
 	 * @param headers a set of mandatory headers
 	 * @param getFeeRequest the {@link GetFeeRequest} containing the payment notices for which to retrieve the fees
@@ -69,24 +68,9 @@ public class FeeCalculatorResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers, @Valid GetFeeRequest getFeeRequest) {
 		Log.debugf("getFee - Input parameters: %s, body %s", headers, getFeeRequest);
-		
-		Log.debugf("---------------------------------------");
-		gecPaymentMethodMap.forEach((key,value) -> {
-			Log.debugf("gecPaymentMethodMap - key: %s - value: %s", key, value);
-		});
-		Log.debugf("---------------------------------------");
-		gecTouchpointMap.forEach((key,value) -> {
-			Log.debugf("gecTouchpointMap - key: %s - value: %s", key, value);
-		});
-		Log.debugf("---------------------------------------");
-		return retrievePspConfiguration(getFeeRequest, headers.getAcquirerId(), headers.getChannel())
-				.onFailure().transform(t -> {
-					Log.errorf(t, "[%s] Error while retrieving the psp configuration from the DB", ErrorCode.ERROR_RETRIEVING_ID_PSP);
-					return new InternalServerErrorException(Response
-							.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(new Errors(List.of(ErrorCode.ERROR_RETRIEVING_ID_PSP)))
-							.build());
-				})
+
+		return retrievePspConfiguration(headers.getRequestId(), headers.getAcquirerId())
+				.map(pspConfiguration -> createGecGetFeeRequest(getFeeRequest, pspConfiguration.getPsp(), headers.getChannel()))
 				.chain(gecRequest -> {
 					Log.debugf("Calling GEC Service with RequestId [%s] and body [%s]", headers.getRequestId(), gecRequest);
 					return feeService.getFees(gecRequest, headers.getRequestId())
@@ -149,7 +133,7 @@ public class FeeCalculatorResource {
 	 */
 	private GecGetFeesRequest createGecGetFeeRequest(GetFeeRequest getFeeRequest, String pspId, String channel) {
 
-		Notice notice = getFeeRequest.getNotices().get(0); // FIXME: change logic when or if GEC will expose the cart
+		Notice notice = getFeeRequest.getNotices().get(0); // TODO: change logic when or if GEC will expose the cart
 
 		List<String> idPspList = new ArrayList<>();
 		idPspList.add(pspId);
@@ -178,20 +162,35 @@ public class FeeCalculatorResource {
 
 		return gecGetFeesRequest;
 	}
-	
+
+
 	/**
-	 * Retrieves the identifier of the PSP from the database.
-	 * If the value is not present return an exception.
-	 * Otherwise, it creates the request to GEC and returns it as a Uni
+	 * Retrieves the PSP configuration by acquirer id, and emits it as a Uni
 	 *
-	 * @param getFeeRequest the request received from the client
-	 * @param acquirerId the acquirer id received in the headers
-	 * @return an {@link Uni} emitting the {@link GecGetFeesRequest}
+	 * @param requestId the id of the request passed in request
+	 * @param acquirerId the id of the acquirer
+	 * @return the {@link Uni} emitting a {@link PspConfiguration}
 	 */
-	private Uni<GecGetFeesRequest> retrievePspConfiguration(GetFeeRequest getFeeRequest, String acquirerId, String channel) {
-		Log.debugf("findIdPspList - find idPsp by AcquirerId : [%s]", acquirerId);
-    	return pspConfRepository.findByIdOptional(acquirerId)
-		 .onItem().transform(o -> o.orElseThrow(NotFoundException::new))
-		 .map(t -> createGecGetFeeRequest(getFeeRequest, t.pspConfiguration.getPspId(), channel)) ;
+	private Uni<PspConfiguration> retrievePspConfiguration(String requestId, String acquirerId) {
+		Log.debugf("retrievePSPConfiguration - requestId: %s acquirerId: %s ", requestId, acquirerId);
+
+		return milRestService.getPspConfiguration(requestId, acquirerId)
+				.onFailure().transform(t -> {
+					if (t instanceof ClientWebApplicationException webEx && webEx.getResponse().getStatus() == 404) {
+						Log.errorf(t, "[%s] Missing psp configuration for acquirerId", ErrorCode.UNKNOWN_ACQUIRER_ID);
+						return new InternalServerErrorException(Response
+								.status(Response.Status.INTERNAL_SERVER_ERROR)
+								.entity(new Errors(List.of(ErrorCode.UNKNOWN_ACQUIRER_ID)))
+								.build());
+					}
+					else {
+						Log.errorf(t, "[%s] Error retrieving the psp configuration", ErrorCode.ERROR_CALLING_MIL_REST_SERVICES);
+						return new InternalServerErrorException(Response
+								.status(Response.Status.INTERNAL_SERVER_ERROR)
+								.entity(new Errors(List.of(ErrorCode.ERROR_CALLING_MIL_REST_SERVICES)))
+								.build());
+					}
+				})
+				.map(AcquirerConfiguration::getPspConfigForGetFeeAndClosePayment);
 	}
 }
