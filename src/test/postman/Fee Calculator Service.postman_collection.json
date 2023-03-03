@@ -2071,6 +2071,16 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{APIM_SUBSCRIPTION_KEY}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -2093,7 +2103,7 @@
 	],
 	"variable": [
 		{
-			"key": "mil_payment_notice_api_version",
+			"key": "mil_fee_calculator_api_version",
 			"value": "1.0.0",
 			"type": "string"
 		},
