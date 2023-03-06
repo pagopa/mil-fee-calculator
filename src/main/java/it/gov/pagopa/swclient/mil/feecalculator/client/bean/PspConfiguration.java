@@ -93,12 +93,15 @@ public class PspConfiguration {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("PspConfiguration{");
-		sb.append("psp='").append(psp).append('\'');
-		sb.append(", broker='").append(broker).append('\'');
-		sb.append(", channel='").append(channel).append('\'');
-		sb.append(", password='").append(password).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return new StringBuilder("PspConfiguration [psp=")
+			.append(psp)
+			.append(", broker=")
+			.append(broker)
+			.append(", channel=")
+			.append(channel)
+			.append(", password=")
+			.append(password)
+			.append("]")
+			.toString();
 	}
 }

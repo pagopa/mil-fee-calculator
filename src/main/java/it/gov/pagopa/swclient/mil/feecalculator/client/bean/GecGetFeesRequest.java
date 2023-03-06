@@ -142,17 +142,21 @@ public class GecGetFeesRequest {
 		this.transferList = transferList;
 	}
 
-
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("GecGetFeesRequest{");
-		sb.append("idPspList=").append(idPspList);
-		sb.append(", paymentAmount=").append(paymentAmount);
-		sb.append(", primaryCreditorInstitution='").append(primaryCreditorInstitution).append('\'');
-		sb.append(", paymentMethod='").append(paymentMethod).append('\'');
-		sb.append(", touchpoint='").append(touchpoint).append('\'');
-		sb.append(", transferList=").append(transferList);
-		sb.append('}');
-		return sb.toString();
+		return new StringBuilder("GecGetFeesRequest [idPspList=")
+			.append(idPspList)
+			.append(", paymentAmount=")
+			.append(paymentAmount)
+			.append(", primaryCreditorInstitution=")
+			.append(primaryCreditorInstitution)
+			.append(", paymentMethod=")
+			.append(paymentMethod)
+			.append(", touchpoint=")
+			.append(touchpoint)
+			.append(", transferList=")
+			.append(transferList)
+			.append("]")
+			.toString();
 	}
 }

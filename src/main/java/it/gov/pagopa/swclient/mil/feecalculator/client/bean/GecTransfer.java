@@ -71,11 +71,13 @@ public class GecTransfer {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("GecTransfer{");
-		sb.append("creditorInstitution='").append(creditorInstitution).append('\'');
-		sb.append(", digitalStamp=").append(digitalStamp);
-		sb.append(", transferCategory='").append(transferCategory).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return new StringBuilder("GecTransfer [creditorInstitution=")
+			.append(creditorInstitution)
+			.append(", digitalStamp=")
+			.append(digitalStamp)
+			.append(", transferCategory=")
+			.append(transferCategory)
+			.append("]")
+			.toString();
 	}
 }
