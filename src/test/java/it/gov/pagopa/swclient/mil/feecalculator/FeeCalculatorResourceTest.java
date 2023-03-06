@@ -1,19 +1,5 @@
 package it.gov.pagopa.swclient.mil.feecalculator;
 
-import static io.restassured.RestAssured.given;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.ws.rs.InternalServerErrorException;
-
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mockito;
-
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -24,32 +10,75 @@ import it.gov.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.PaymentMethods;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
 import it.gov.pagopa.swclient.mil.feecalculator.client.FeeService;
-import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfEntity;
-import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfRepository;
-import it.gov.pagopa.swclient.mil.feecalculator.dao.PspConfiguration;
+import it.gov.pagopa.swclient.mil.feecalculator.client.MilRestService;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.AcquirerConfiguration;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
+import it.gov.pagopa.swclient.mil.feecalculator.client.bean.PspConfiguration;
 import it.gov.pagopa.swclient.mil.feecalculator.resource.FeeCalculatorResource;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
+
+import javax.ws.rs.InternalServerErrorException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static io.restassured.RestAssured.given;
 
 @QuarkusTest
 @TestHTTPEndpoint(FeeCalculatorResource.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FeeCalculatorResourceTest {
-	
-	final static String TAX_CODE	= "CHCZLN73D08A662B";
-	final static String OUTCOME		= "TERMS_AND_CONDITIONS_NOT_YET_ACCEPTED";
-	final static String TOKEN		= "XYZ13243XXYYZZ";
+
 	final static String API_VERSION	= "1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay";
-	final static String TC_VERSION	= "1";
+
+	@InjectMock
+	@RestClient
+	FeeService feeService;
 	
 	@InjectMock
 	@RestClient
-	private FeeService feeService;
-	
-	@InjectMock
-	private PspConfRepository pspConfRepository;
-	
+	MilRestService milRestService;
+
+	Map<String, String> commonHeaders;
+
+	AcquirerConfiguration acquirerConfiguration;
+
+	@BeforeAll
+	void createTestObjects() {
+
+		// common headers
+		commonHeaders = new HashMap<>();
+		commonHeaders.put("RequestId", UUID.randomUUID().toString());
+		commonHeaders.put("Version", "1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay");
+		commonHeaders.put("AcquirerId", "4585625");
+		commonHeaders.put("Channel", "ATM");
+		commonHeaders.put("TerminalId", "0aB9wXyZ");
+		commonHeaders.put("SessionId", UUID.randomUUID().toString());
+
+		// acquirer PSP configuration
+		acquirerConfiguration = new AcquirerConfiguration();
+
+		PspConfiguration pspConfiguration = new PspConfiguration();
+		pspConfiguration.setPsp("AGID_01");
+		pspConfiguration.setBroker("97735020584");
+		pspConfiguration.setChannel("97735020584_07");
+		pspConfiguration.setPassword("PLACEHOLDER");
+
+		acquirerConfiguration.setPspConfigForVerifyAndActivate(pspConfiguration);
+		acquirerConfiguration.setPspConfigForGetFeeAndClosePayment(pspConfiguration);
+
+	}
+
 	@Test
 	void testGetFee_200() {
 		GetFeeRequest bodyRequest = new GetFeeRequest();
@@ -84,31 +113,18 @@ class FeeCalculatorResourceTest {
 		
 		List<GecGetFeesResponse> listOfFeeServiceResponse = new ArrayList<>();
 		listOfFeeServiceResponse.add(gecGetFeesResponse);
-		
-		PspConfiguration pspConfiguration = new PspConfiguration();
-		pspConfiguration.setPspId("AGID_01");
-		pspConfiguration.setPspBroker("9084rt");
-		pspConfiguration.setPspPassword("09876yoih");
-		PspConfEntity pspConfEntity = new PspConfEntity();
-		pspConfEntity.acquirerId = "987654";
-		pspConfEntity.pspConfiguration = pspConfiguration;
-		
+
 		Mockito
 			.when(feeService.getFees(Mockito.any(GecGetFeesRequest.class), Mockito.any(String.class)))
 			.thenReturn(Uni.createFrom().item(listOfFeeServiceResponse));
 		
 		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.of(pspConfEntity)));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 		
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(bodyRequest)
 				.when()
@@ -140,31 +156,18 @@ class FeeCalculatorResourceTest {
 		transfers.add(transfer);
 		notice.setTransfers(transfers);
 		body.setNotices(notices);
-		
-		PspConfiguration pspConfiguration = new PspConfiguration();
-		pspConfiguration.setPspId("AGID_01");
-		pspConfiguration.setPspBroker("9084rt");
-		pspConfiguration.setPspPassword("09876yoih");
-		PspConfEntity pspConfEntity = new PspConfEntity();
-		pspConfEntity.acquirerId = "987654";
-		pspConfEntity.pspConfiguration = pspConfiguration;
-		
+
 		Mockito
 			.when(feeService.getFees(Mockito.any(GecGetFeesRequest.class), Mockito.any(String.class)))
 			.thenReturn(Uni.createFrom().failure(new InternalServerErrorException()));
-		
+
 		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.of(pspConfEntity)));
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 		
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -180,58 +183,32 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_500_pspNotFound() {
+
 		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
-		
+
 		Transfer transfer = new Transfer();
 		transfer.setCategory("KTM");
 		transfer.setPaTaxCode("15376371009");
-		
+
 		Notice notice = new Notice();
 		notice.setAmount(1000L);
 		notice.setPaTaxCode("15376371009");
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
-		
+
 		List<Transfer> transfers = new ArrayList<>();
 		transfers.add(transfer);
 		notice.setTransfers(transfers);
 		bodyRequest.setNotices(notices);
-		
-		GecGetFeesResponse gecGetFeesResponse = new GecGetFeesResponse();
-		gecGetFeesResponse.setBundleDescription("description");
-		gecGetFeesResponse.setBundleName("name");
-		gecGetFeesResponse.setIdBundle("325643");
-		gecGetFeesResponse.setIdCiBundle("32523");
-		gecGetFeesResponse.setIdPsp("90809792");
-		gecGetFeesResponse.setPaymentMethod(PaymentMethods.BANK_ACCOUNT.toString());
-		gecGetFeesResponse.setPrimaryCiIncurredFee(1000);
-		gecGetFeesResponse.setTaxPayerFee(100);
-		gecGetFeesResponse.setTouchpoint("ATM");
-		
-		List<GecGetFeesResponse> listOfFeeServiceResponse = new ArrayList<>();
-		listOfFeeServiceResponse.add(gecGetFeesResponse);
-		
-		PspConfiguration pspConfiguration = new PspConfiguration();
-		pspConfiguration.setPspId("AGID_01");
-		pspConfiguration.setPspBroker("9084rt");
-		pspConfiguration.setPspPassword("09876yoih");
-		PspConfEntity pspConfEntity = new PspConfEntity();
-		pspConfEntity.acquirerId = "987654";
-		pspConfEntity.pspConfiguration = pspConfiguration;
-		
+
 		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
 		
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(bodyRequest)
 				.when()
@@ -241,27 +218,19 @@ class FeeCalculatorResourceTest {
 				.response();
 			
         Assertions.assertEquals(500, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.ERROR_RETRIEVING_ID_PSP)); 
+        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.UNKNOWN_ACQUIRER_ID));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	
 	//Tests mandatory fields
 	@Test
 	void testGetFee_400_PaymentMethodMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -277,21 +246,13 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_PaymentMethodInvalid() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod("PAY");
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -307,21 +268,13 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_NoticeMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod("PAY");
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -337,6 +290,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_NoticesExceeded() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod("PAY");
 		Notice notice = new Notice();
@@ -350,19 +304,10 @@ class FeeCalculatorResourceTest {
 		notices.add(notice);
 		
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -378,6 +323,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_AmountMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -385,19 +331,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -412,7 +349,7 @@ class FeeCalculatorResourceTest {
 	}
 	
 	@Test
-	void testGetFee_400_AmountExeedMinSize() {
+	void testGetFee_400_AmountExceedMinSize() {
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -421,19 +358,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -448,7 +376,8 @@ class FeeCalculatorResourceTest {
 	}
 	
 	@Test
-	void testGetFee_400_AmountExeedMaxSize() {
+	void testGetFee_400_AmountExceedMaxSize() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -458,18 +387,10 @@ class FeeCalculatorResourceTest {
 		notices.add(notice);
 		body.setNotices(notices);
 		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -485,6 +406,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_PaTaxCodeMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -493,19 +415,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -521,6 +434,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_PaTaxCodeNotValid() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -530,19 +444,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -558,6 +463,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_TransfersMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -567,19 +473,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -593,7 +490,8 @@ class FeeCalculatorResourceTest {
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
 	@Test
-	void testGetFee_400_TransfersExeed() {
+	void testGetFee_400_TransfersExceeded() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -614,19 +512,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -642,6 +531,7 @@ class FeeCalculatorResourceTest {
 
 	@Test
 	void testGetFee_400_TransfersPaTaxCodeMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -657,19 +547,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -685,6 +566,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_TransfersPaTaxCodeInvalid() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -701,19 +583,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -729,6 +602,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_TransfersCategoryMandatory() {
+
 		GetFeeRequest body = new GetFeeRequest();
 		body.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		Notice notice = new Notice();
@@ -745,19 +619,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -790,19 +655,10 @@ class FeeCalculatorResourceTest {
 		List<Notice> notices = new ArrayList<>();
 		notices.add(notice);
 		body.setNotices(notices);
-		
-		Mockito
-			.when(pspConfRepository.findByIdOptional(Mockito.any(String.class)))
-			.thenReturn(Uni.createFrom().item(Optional.empty()));
-		
+
 		Response response = given()
 				.contentType(ContentType.JSON)
-				.headers(
-						"RequestId", "d0d654e6-97da-4848-b568-99fedccb642b",
-						"Version", API_VERSION,
-						"AcquirerId", "4585625",
-						"Channel", "ATM",
-						"TerminalId", "0aB9wXyZ")
+				.headers(commonHeaders)
 				.and()
 				.body(body)
 				.when()
@@ -819,6 +675,7 @@ class FeeCalculatorResourceTest {
 	//TEST headers fields
 	@Test
 	void testGetFee_400_RequestIdMandatory() {
+
 		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
@@ -844,6 +701,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_RequestIdNotValid() {
+
 		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
@@ -870,6 +728,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_VersionNotValid() {
+
 		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		
@@ -896,6 +755,7 @@ class FeeCalculatorResourceTest {
 	
 	@Test
 	void testGetFee_400_VersionExceed() {
+
 		GetFeeRequest bodyRequest = new GetFeeRequest();
 		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
 		

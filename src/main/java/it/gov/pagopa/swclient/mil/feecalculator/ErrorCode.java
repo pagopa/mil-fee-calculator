@@ -35,6 +35,9 @@ public final class ErrorCode {
 	public static final String TRANSFERS_CATEGORY_MUST_MATCH_REGEXP				= MODULE_ID + "000011";
 	
 	public static final String ERROR_CHOOSING_FEE_RESPONSE						= MODULE_ID + "000012";
+
+	public static final String UNKNOWN_ACQUIRER_ID								= MODULE_ID + "000013";
+	public static final String ERROR_CALLING_MIL_REST_SERVICES					= MODULE_ID + "000013";
 		
 	private ErrorCode() {
 		// This class cannot be instantiated!
