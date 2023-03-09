@@ -51,13 +51,12 @@ public class AcquirerConfiguration {
 		this.pspConfigForGetFeeAndClosePayment = pspConfigForGetFeeAndClosePayment;
 	}
 
-
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("PspConfiguration{");
-		sb.append("pspConfigForVerifyAndActivate=").append(pspConfigForVerifyAndActivate);
-		sb.append(", pspConfigForGetFeeAndClosePayment=").append(pspConfigForGetFeeAndClosePayment);
-		sb.append('}');
-		return sb.toString();
+		return new StringBuilder("AcquirerConfiguration [pspConfigForVerifyAndActivate=")
+			.append(pspConfigForVerifyAndActivate)
+			.append(", pspConfigForGetFeeAndClosePayment=")
+			.append(pspConfigForGetFeeAndClosePayment)
+			.append("]").toString();
 	}
 }

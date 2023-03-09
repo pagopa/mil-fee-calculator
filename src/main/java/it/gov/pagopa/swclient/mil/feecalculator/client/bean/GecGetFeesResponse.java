@@ -233,32 +233,31 @@ public class GecGetFeesResponse {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("FeeServiceResponse [bundleDescription=");
-		builder.append(bundleDescription);
-		builder.append(", bundleName=");
-		builder.append(bundleName);
-		builder.append(", idBrokerPsp=");
-		builder.append(idBrokerPsp);
-		builder.append(", idBundle=");
-		builder.append(idBundle);
-		builder.append(", idChannel=");
-		builder.append(idChannel);
-		builder.append(", idCiBundle=");
-		builder.append(idCiBundle);
-		builder.append(", idPsp=");
-		builder.append(idPsp);
-		builder.append(", onUs=");
-		builder.append(onUs);
-		builder.append(", paymentMethod=");
-		builder.append(paymentMethod);
-		builder.append(", primaryCiIncurredFee=");
-		builder.append(primaryCiIncurredFee);
-		builder.append(", taxPayerFee=");
-		builder.append(taxPayerFee);
-		builder.append(", touchpoint=");
-		builder.append(touchpoint);
-		builder.append("]");
-		return builder.toString();
+		return new StringBuilder("FeeServiceResponse [bundleDescription=")
+			.append(bundleDescription)
+			.append(", bundleName=")
+			.append(bundleName)
+			.append(", idBrokerPsp=")
+			.append(idBrokerPsp)
+			.append(", idBundle=")
+			.append(idBundle)
+			.append(", idChannel=")
+			.append(idChannel)
+			.append(", idCiBundle=")
+			.append(idCiBundle)
+			.append(", idPsp=")
+			.append(idPsp)
+			.append(", onUs=")
+			.append(onUs)
+			.append(", paymentMethod=")
+			.append(paymentMethod)
+			.append(", primaryCiIncurredFee=")
+			.append(primaryCiIncurredFee)
+			.append(", taxPayerFee=")
+			.append(taxPayerFee)
+			.append(", touchpoint=")
+			.append(touchpoint)
+			.append("]")
+			.toString();
 	}
 }
