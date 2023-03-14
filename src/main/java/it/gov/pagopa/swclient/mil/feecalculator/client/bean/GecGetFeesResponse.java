@@ -1,263 +1,58 @@
 package it.gov.pagopa.swclient.mil.feecalculator.client.bean;
 
+import java.util.List;
+
 public class GecGetFeesResponse {
 
-	/*
+	/**
 	 * 
 	 */
-	private String bundleDescription;
+	private Boolean belowThreshold;
 	
-	/*
+	/**
 	 * 
 	 */
-	private String bundleName;
-	
-	/*
-	 * 
-	 */
-	private String idBrokerPsp;
-	
-	/*
-	 * 
-	 */
-	private String idBundle;
-	
-	/*
-	 * 
-	 */
-	private String idChannel;
-	
-	/*
-	 * 
-	 */
-	private String idCiBundle;
-	
-	/*
-	 * 
-	 */
-	private String idPsp;
-	
-	/*
-	 * 
-	 */
-	private Boolean onUs;
-	
-	/*
-	 * 
-	 */
-	private String paymentMethod;
-	
-	/*
-	 * 
-	 */
-	private long primaryCiIncurredFee;
-	
-	/*
-	 * 
-	 */
-	private long taxPayerFee;
-	
-	/*
-	 * 
-	 */
-	private String touchpoint;
-	
+	private List<BundleOption> bundleOptions;
+
 	/**
-	 * @return the bundleDescription
+	 * Gets belowThreshold
+	 * @return value of belowThreshold
 	 */
-	public String getBundleDescription() {
-		return bundleDescription;
+	public Boolean getBelowThreshold() {
+		return belowThreshold;
 	}
 
 	/**
-	 * @param bundleDescription the bundleDescription to set
+	 * Sets belowThreshold
+	 * @param belowThreshold value of belowThreshold
 	 */
-	public void setBundleDescription(String bundleDescription) {
-		this.bundleDescription = bundleDescription;
+	public void setBelowThreshold(Boolean belowThreshold) {
+		this.belowThreshold = belowThreshold;
 	}
 
 	/**
-	 * @return the bundleName
+	 * Gets bundleOptions
+	 * @return value of bundleOptions
 	 */
-	public String getBundleName() {
-		return bundleName;
+	public List<BundleOption> getBundleOptions() {
+		return bundleOptions;
 	}
 
 	/**
-	 * @param bundleName the bundleName to set
+	 * Sets bundleOptions
+	 * @param bundleOptions value of bundleOptions
 	 */
-	public void setBundleName(String bundleName) {
-		this.bundleName = bundleName;
+	public void setBundleOptions(List<BundleOption> bundleOptions) {
+		this.bundleOptions = bundleOptions;
 	}
-
-	/**
-	 * @return the idBrokerPsp
-	 */
-	public String getIdBrokerPsp() {
-		return idBrokerPsp;
-	}
-
-	/**
-	 * @param idBrokerPsp the idBrokerPsp to set
-	 */
-	public void setIdBrokerPsp(String idBrokerPsp) {
-		this.idBrokerPsp = idBrokerPsp;
-	}
-
-	/**
-	 * @return the idBundle
-	 */
-	public String getIdBundle() {
-		return idBundle;
-	}
-
-	/**
-	 * @param idBundle the idBundle to set
-	 */
-	public void setIdBundle(String idBundle) {
-		this.idBundle = idBundle;
-	}
-
-	/**
-	 * @return the idChannel
-	 */
-	public String getIdChannel() {
-		return idChannel;
-	}
-
-	/**
-	 * @param idChannel the idChannel to set
-	 */
-	public void setIdChannel(String idChannel) {
-		this.idChannel = idChannel;
-	}
-
-	/**
-	 * @return the idCiBundle
-	 */
-	public String getIdCiBundle() {
-		return idCiBundle;
-	}
-
-	/**
-	 * @param idCiBundle the idCiBundle to set
-	 */
-	public void setIdCiBundle(String idCiBundle) {
-		this.idCiBundle = idCiBundle;
-	}
-
-	/**
-	 * @return the idPsp
-	 */
-	public String getIdPsp() {
-		return idPsp;
-	}
-
-	/**
-	 * @param idPsp the idPsp to set
-	 */
-	public void setIdPsp(String idPsp) {
-		this.idPsp = idPsp;
-	}
-
-	/**
-	 * @return the onUs
-	 */
-	public Boolean isOnUs() {
-		return onUs;
-	}
-
-	/**
-	 * @param onUs the onUs to set
-	 */
-	public void setOnUs(Boolean onUs) {
-		this.onUs = onUs;
-	}
-
-	/**
-	 * @return the paymentMethod
-	 */
-	public String getPaymentMethod() {
-		return paymentMethod;
-	}
-
-	/**
-	 * @param paymentMethod the paymentMethod to set
-	 */
-	public void setPaymentMethod(String paymentMethod) {
-		this.paymentMethod = paymentMethod;
-	}
-
-	/**
-	 * @return the primaryCiIncurredFee
-	 */
-	public long getPrimaryCiIncurredFee() {
-		return primaryCiIncurredFee;
-	}
-
-	/**
-	 * @param primaryCiIncurredFee the primaryCiIncurredFee to set
-	 */
-	public void setPrimaryCiIncurredFee(long primaryCiIncurredFee) {
-		this.primaryCiIncurredFee = primaryCiIncurredFee;
-	}
-
-	/**
-	 * @return the taxPayerFee
-	 */
-	public long getTaxPayerFee() {
-		return taxPayerFee;
-	}
-
-	/**
-	 * @param taxPayerFee the taxPayerFee to set
-	 */
-	public void setTaxPayerFee(long taxPayerFee) {
-		this.taxPayerFee = taxPayerFee;
-	}
-
-	/**
-	 * @return the touchpoint
-	 */
-	public String getTouchpoint() {
-		return touchpoint;
-	}
-
-	/**
-	 * @param touchpoint the touchpoint to set
-	 */
-	public void setTouchpoint(String touchpoint) {
-		this.touchpoint = touchpoint;
-	}
-
 
 	@Override
 	public String toString() {
-		return new StringBuilder("FeeServiceResponse [bundleDescription=")
-			.append(bundleDescription)
-			.append(", bundleName=")
-			.append(bundleName)
-			.append(", idBrokerPsp=")
-			.append(idBrokerPsp)
-			.append(", idBundle=")
-			.append(idBundle)
-			.append(", idChannel=")
-			.append(idChannel)
-			.append(", idCiBundle=")
-			.append(idCiBundle)
-			.append(", idPsp=")
-			.append(idPsp)
-			.append(", onUs=")
-			.append(onUs)
-			.append(", paymentMethod=")
-			.append(paymentMethod)
-			.append(", primaryCiIncurredFee=")
-			.append(primaryCiIncurredFee)
-			.append(", taxPayerFee=")
-			.append(taxPayerFee)
-			.append(", touchpoint=")
-			.append(touchpoint)
-			.append("]")
-			.toString();
+		return new StringBuilder("GecGetFeesResponse [belowThreshold=")
+			.append(belowThreshold)
+			.append(", bundleOptions=")
+			.append(bundleOptions)
+			.append("]").toString();
 	}
+
 }

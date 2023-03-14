@@ -24,8 +24,8 @@ public interface MilRestService {
 	 */
 	@GET
 	@Path("/mil-acquirer-conf/confs/{acquirerId}/psp")
-	@ClientHeaderParam(name = "Ocp-Apim-Subscription-Key", value = "${mil.rest-service.subscription-key}", required = false)
-	@ClientHeaderParam(name = "Version", value = "${mil.acquirer-conf.version}", required = false)
-    Uni<AcquirerConfiguration> getPspConfiguration(@HeaderParam(value = "RequestId") String requestId, @PathParam(value = "acquirerId") String acquirerId);
+	@ClientHeaderParam(name = "Ocp-Apim-Subscription-Key", value = "${mil-rest-client.apim-subscription-key}", required = false)
+	@ClientHeaderParam(name = "Version", value = "${mil-rest-client.mil-acquirer-conf.version}", required = false)
+	Uni<AcquirerConfiguration> getPspConfiguration(@HeaderParam(value = "RequestId") String requestId, @PathParam(value = "acquirerId") String acquirerId);
 
 }

@@ -5,18 +5,71 @@
     },
     "response": {
         "status": 200,
-        "jsonBody":  [{ 
-			"taxPayerFee":1236,
-			"primaryCiIncurredFee" : 7875,
-			"paymentMethod": "ANY",
-			"touchpoint": "ANY",
-			"idBundle": "243564",
-			"bundleName": "test",
-			"bundleDescription": "test",
-			"idCiBundle": "3256435",
-			"idPsp": "243502398"
-		
-		}],
+        "jsonBody":  {
+			"belowThreshold": false,
+			"bundleOptions": [
+				{
+					"taxPayerFee": 50,
+					"primaryCiIncurredFee": 0,
+					"paymentMethod": "ANY",
+					"touchpoint": "ANY",
+					"idBundle": "b51f2062-def7-4976-a258-6c94f57d402a",
+					"bundleName": "soft-cli-test10",
+					"bundleDescription": "pacchetto di test per software client",
+					"idCiBundle": null,
+					"idPsp": "AGID_01",
+					"idChannel": null,
+					"idBrokerPsp": null,
+					"onUs": false,
+					"abi": null
+				},
+				{
+					"taxPayerFee": 100,
+					"primaryCiIncurredFee": 0,
+					"paymentMethod": "ANY",
+					"touchpoint": "ANY",
+					"idBundle": "5afb70a5-b427-49a3-8e2c-4b74625e4fe1",
+					"bundleName": "soft-cli-test7",
+					"bundleDescription": "pacchetto di test per software client",
+					"idCiBundle": null,
+					"idPsp": "AGID_01",
+					"idChannel": null,
+					"idBrokerPsp": null,
+					"onUs": false,
+					"abi": null
+				},
+				{
+					"taxPayerFee": 100,
+					"primaryCiIncurredFee": 0,
+					"paymentMethod": "ANY",
+					"touchpoint": "ANY",
+					"idBundle": "ca9a56e7-aa02-4d11-a8c8-71e1670f974e",
+					"bundleName": "soft-cli-test8",
+					"bundleDescription": "pacchetto di test per software client",
+					"idCiBundle": null,
+					"idPsp": "AGID_01",
+					"idChannel": null,
+					"idBrokerPsp": null,
+					"onUs": false,
+					"abi": null
+				},
+				{
+					"taxPayerFee": 100,
+					"primaryCiIncurredFee": 0,
+					"paymentMethod": "ANY",
+					"touchpoint": "ANY",
+					"idBundle": "683589f9-9471-4bd4-ba44-a1044aea4dcc",
+					"bundleName": "soft-cli-test9",
+					"bundleDescription": "pacchetto di test per software client",
+					"idCiBundle": null,
+					"idPsp": "AGID_01",
+					"idChannel": null,
+					"idBrokerPsp": null,
+					"onUs": false,
+					"abi": null
+				}
+			]
+		},
 	    "headers": {
             "Content-Type": "application/json"
         }

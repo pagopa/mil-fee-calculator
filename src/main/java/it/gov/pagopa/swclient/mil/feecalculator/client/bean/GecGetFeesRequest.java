@@ -12,34 +12,34 @@ import javax.validation.constraints.NotNull;
  */
 public class GecGetFeesRequest {
 	
-	/*
+	/**
 	 * 
 	 */
 	private List<String> idPspList;
 	
-	/*
+	/**
 	 * 
 	 */
 	@NotNull
 	private Long paymentAmount;
 	
-	/*
+	/**
 	 * 
 	 */
 	@NotNull
 	private String primaryCreditorInstitution;
 	
-	/*
+	/**
 	 * 
 	 */
 	private String paymentMethod;
 	
-	/*
+	/**
 	 * 
 	 */
 	private String touchpoint;
 	
-	/*
+	/**
 	 * 
 	 */
 	@NotNull
