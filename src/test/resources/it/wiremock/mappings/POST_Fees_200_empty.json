@@ -1,0 +1,20 @@
+{	
+    "request": {
+        "method": "POST",
+        "url": "/fees",
+        "bodyPatterns" : [
+          {"matchesJsonPath" : "$[?(@.primaryCreditorInstitution == '00000001000')]"}
+      ]
+    },
+    "response": {
+        "status": 200,
+        "jsonBody":  {
+			"belowThreshold": false,
+			"bundleOptions": []
+		},
+	    "headers": {
+            "Content-Type": "application/json"
+        }
+        
+    }
+}

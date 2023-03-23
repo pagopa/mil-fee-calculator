@@ -11,6 +11,78 @@
 			"name": "1. Validazione dati",
 			"item": [
 				{
+					"name": "Richiesta empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"errors containes value\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000014\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
+								"key": "Version",
+								"value": "{{mil_fee_calculator_api_version}}",
+								"type": "text"
+							},
+							{
+								"key": "AcquirerId",
+								"value": "{{acquirer_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Channel",
+								"value": "{{channel}}",
+								"type": "text"
+							},
+							{
+								"key": "TerminalId",
+								"value": "{{terminal_id}}",
+								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{MIL_FEE_CALCULATOR_BASE_URL}}/fees",
+							"host": [
+								"{{MIL_FEE_CALCULATOR_BASE_URL}}"
+							],
+							"path": [
+								"fees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "PaymentMethod nullo",
 					"event": [
 						{
@@ -54,11 +126,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -121,11 +198,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"BANK\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"BANK\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -188,11 +270,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\"\r\n  \r\n}\r\n",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -255,11 +342,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 123456,\r\n      \"paTaxCode\": \"11116371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"11116371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 223456,\r\n      \"paTaxCode\": \"22226371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"22226371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 333456,\r\n      \"paTaxCode\": \"33336371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"33336371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 553456,\r\n      \"paTaxCode\": \"55556371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"55556371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"amount\": 663456,\r\n      \"paTaxCode\": \"66666371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"66666371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"amount\": 123456,\r\n            \"paTaxCode\": \"11116371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"11116371009\",\r\n                    \"category\": \"\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"amount\": 223456,\r\n            \"paTaxCode\": \"22226371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"22226371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"amount\": 333456,\r\n            \"paTaxCode\": \"33336371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"33336371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"amount\": 553456,\r\n            \"paTaxCode\": \"55556371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"55556371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"amount\": 663456,\r\n            \"paTaxCode\": \"66666371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"66666371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -322,11 +414,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -346,7 +443,7 @@
 					"response": []
 				},
 				{
-					"name": "Amount supera valore min",
+					"name": "Amount minore valore min",
 					"event": [
 						{
 							"listen": "test",
@@ -389,11 +486,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 0,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 0,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -413,7 +515,7 @@
 					"response": []
 				},
 				{
-					"name": "Amount supera valore max",
+					"name": "Amount maggiore valore max",
 					"event": [
 						{
 							"listen": "test",
@@ -456,11 +558,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 199999999999,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 199999999999,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -523,11 +630,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -590,11 +702,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989769690032\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"paTaxCode\": \"1537637100989769690032\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -657,11 +774,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"15376371009\"\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"paTaxCode\": \"15376371009\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -724,11 +846,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"category\": \"KTM\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -791,11 +918,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"1537637100989908762384629\",\r\n          \"category\": \"KTM\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"1537637100989908762384629\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -858,11 +990,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"1537637100989\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -925,11 +1062,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 100,\r\n      \"paTaxCode\": \"1537637100989\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"1537637100989\",\r\n          \"category\": \"KT°M\"\r\n        }\r\n\r\n      ]\r\n    }\r\n  ]\r\n  \r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 100,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KT°M\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -978,6 +1120,11 @@
 							"",
 							"pm.test('Schema is valid', function() {",
 							"  pm.response.to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"errors containes only one element\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.errors).to.have.length(1);",
 							"});"
 						]
 					}
@@ -1034,11 +1181,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1109,11 +1261,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1184,11 +1341,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1259,11 +1421,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1329,11 +1496,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1404,11 +1576,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1474,11 +1651,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1549,11 +1731,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1628,7 +1815,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1708,7 +1895,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1756,6 +1943,11 @@
 						"method": "POST",
 						"header": [
 							{
+								"key": "RequestId",
+								"value": "{{$guid}}",
+								"type": "text"
+							},
+							{
 								"key": "Version",
 								"value": "{{mil_fee_calculator_api_version}}",
 								"type": "text"
@@ -1769,11 +1961,16 @@
 								"key": "Channel",
 								"value": "{{channel}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1844,11 +2041,16 @@
 								"key": "TerminalId",
 								"value": "13---..99",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"PAGOBANCOMAT\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 12345,\r\n            \"paTaxCode\": \"15376371009\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"15376371009\",\r\n                    \"category\": \"KTM\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1885,6 +2087,23 @@
 						"exec": [
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"const schema = {",
+							"  \"properties\": {",
+							"    \"errors\": {",
+							"      \"type\": \"array\"",
+							"    }",
+							"  }",
+							"};",
+							"",
+							"pm.test('Schema is valid', function() {",
+							"  pm.response.to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"errors containes only one element\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.errors).to.have.length(1);",
 							"});"
 						]
 					}
@@ -1949,11 +2168,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n    \"paymentMethod\": \"{{payment_method}}\",\r\n    \"notices\": [\r\n        {\r\n            \"amount\": 10000,\r\n            \"paTaxCode\": \"{{pa_tax_code}}\",\r\n            \"transfers\": [\r\n                {\r\n                    \"paTaxCode\": \"{{pa_tax_code}}\",\r\n                    \"category\": \"{{category}}\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1982,7 +2206,7 @@
 									"\r",
 									"pm.test(\"errors containes value\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.errors).to.contain(\"00700000D\");\r",
+									"    pm.expect(jsonData.errors).to.contain(\"007000013\");\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2013,7 +2237,7 @@
 							},
 							{
 								"key": "AcquirerId",
-								"value": "1111111",
+								"value": "458562",
 								"type": "text"
 							},
 							{
@@ -2025,11 +2249,16 @@
 								"key": "TerminalId",
 								"value": "{{terminal_id}}",
 								"type": "text"
+							},
+							{
+								"key": "MerchantId",
+								"value": "{{merchant_id}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"paymentMethod\": \"PAGOBANCOMAT\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 12345,\r\n      \"paTaxCode\": \"15376371009\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"15376371009\",\r\n          \"category\": \"KTM\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"paymentMethod\": \"{{payment_method}}\",\r\n  \"notices\": [\r\n    {\r\n      \"amount\": 10000,\r\n      \"paTaxCode\": \"{{pa_tax_code}}\",\r\n      \"transfers\": [\r\n        {\r\n          \"paTaxCode\": \"{{pa_tax_code}}\",\r\n          \"category\": \"{{category}}\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2130,6 +2359,21 @@
 		{
 			"key": "terminal_id",
 			"value": "4585625",
+			"type": "string"
+		},
+		{
+			"key": "merchant_id",
+			"value": "28405fHfk73x88D",
+			"type": "string"
+		},
+		{
+			"key": "payment_method",
+			"value": "PAYMENT_CARD",
+			"type": "string"
+		},
+		{
+			"key": "category",
+			"value": "",
 			"type": "string"
 		}
 	]

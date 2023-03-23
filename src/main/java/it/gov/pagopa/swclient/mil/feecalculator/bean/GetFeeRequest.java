@@ -18,7 +18,7 @@ public class GetFeeRequest {
 	 * Method used to pay notice/s
 	 */
 	@NotNull(message = "[" + ErrorCode.PAYMENT_METHOD_MUST_NOT_BE_NULL + "] paymentMethod must not be null")
-	@Pattern(regexp = "PAGOBANCOMAT|DEBIT_CARD|CREDIT_CARD|BANK_ACCOUNT|CASH", message = "[" + ErrorCode.PAYMENT_METHOD_MUST_MATCH_REGEXP + "] paymentMethod must match one of the values \"{regexp}\"")
+	@Pattern(regexp = "PAGOBANCOMAT|DEBIT_CARD|CREDIT_CARD|PAYMENT_CARD|BANK_ACCOUNT|CASH", message = "[" + ErrorCode.PAYMENT_METHOD_MUST_MATCH_REGEXP + "] paymentMethod must match one of the values \"{regexp}\"")
 	private String paymentMethod;
 	
 	/**

@@ -4,7 +4,7 @@
         "method": "POST",
         "url": "/fees",
         "bodyPatterns" : [
-           {"matchesJsonPath" : "$[?(@.primaryCreditorInstitution == '55576371009')]"}
+           {"matchesJsonPath" : "$[?(@.primaryCreditorInstitution == '00000001002')]"}
 		    
        ]
     },
@@ -22,9 +22,6 @@
                 "idPsp": "243502398"
              
             }],
-        "chunkedDribbleDelay": {
-            "numberOfChunks": 5,
-            "totalDuration": 3000000
-        }
+      "fixedDelayMilliseconds": 5000
     }
 }

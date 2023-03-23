@@ -34,10 +34,12 @@ public final class ErrorCode {
 	public static final String TRANSFERS_CATEGORY_MUST_NOT_BE_NULL				= MODULE_ID + "000010";
 	public static final String TRANSFERS_CATEGORY_MUST_MATCH_REGEXP				= MODULE_ID + "000011";
 	
-	public static final String ERROR_CHOOSING_FEE_RESPONSE						= MODULE_ID + "000012";
+	public static final String NO_FEE_FOUND										= MODULE_ID + "000012";
 
 	public static final String UNKNOWN_ACQUIRER_ID								= MODULE_ID + "000013";
 	public static final String ERROR_CALLING_MIL_REST_SERVICES					= MODULE_ID + "000013";
+
+	public static final String REQUEST_MUST_NOT_BE_EMPTY 						= MODULE_ID + "000014";
 		
 	private ErrorCode() {
 		// This class cannot be instantiated!

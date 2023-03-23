@@ -100,7 +100,7 @@ public class PspConfiguration {
 			.append(", channel=")
 			.append(channel)
 			.append(", password=")
-			.append(password)
+			.append(password != null ? "***" : null)
 			.append("]")
 			.toString();
 	}

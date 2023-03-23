@@ -4,7 +4,7 @@
         "method": "POST",
         "url": "/fees",
 		"bodyPatterns" : [
-				{"matchesJsonPath" : "$[?(@.primaryCreditorInstitution == '44476371009')]"}
+				{"matchesJsonPath" : "$[?(@.primaryCreditorInstitution == '00000001001')]"}
 		]
     },
     "response": {

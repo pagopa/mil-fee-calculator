@@ -14,17 +14,17 @@ import it.gov.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.gov.pagopa.swclient.mil.feecalculator.bean.Transfer;
 import it.gov.pagopa.swclient.mil.feecalculator.client.FeeService;
 import it.gov.pagopa.swclient.mil.feecalculator.client.MilRestService;
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.AcquirerConfiguration;
 import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
-import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
 import it.gov.pagopa.swclient.mil.feecalculator.client.bean.GecTransfer;
 import it.gov.pagopa.swclient.mil.feecalculator.client.bean.PspConfiguration;
+import it.gov.pagopa.swclient.mil.feecalculator.util.FeeSelector;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.InternalServerErrorException;
@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 
 @Path("/fees")
@@ -66,14 +66,15 @@ public class FeeCalculatorResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers, @Valid GetFeeRequest getFeeRequest) {
+	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers,
+								@Valid @NotNull(message = "[" + ErrorCode.REQUEST_MUST_NOT_BE_EMPTY + "] request must not be empty") GetFeeRequest getFeeRequest) {
 		Log.debugf("getFee - Input parameters: %s, body %s", headers, getFeeRequest);
 
 		return retrievePspConfiguration(headers.getRequestId(), headers.getAcquirerId())
 				.map(pspConfiguration -> createGecGetFeeRequest(getFeeRequest, pspConfiguration.getPsp(), headers.getChannel()))
 				.chain(gecRequest -> {
-					Log.debugf("Calling GEC Service with RequestId [%s] and body [%s]", headers.getRequestId(), gecRequest);
-					return feeService.getFees(gecRequest, headers.getRequestId())
+					Log.debugf("Calling GEC service: requestId %s, body %s", headers.getRequestId(), gecRequest);
+					return feeService.getFees(headers.getRequestId(), gecRequest)
 							.onFailure().transform(f -> {
 								Log.errorf(f, "[%s] Error while calling the GEC getFees service", ErrorCode.ERROR_RETRIEVING_FEES);
 								return new InternalServerErrorException(Response
@@ -82,47 +83,26 @@ public class FeeCalculatorResource {
 										.build());
 							})
 							.map(getFeesResponse -> {
+								Log.debugf("Received GEC response: %s", getFeesResponse);
+								long fee = 0;
+								try {
+									fee = FeeSelector.getFirstFee(getFeesResponse.getBundleOptions());
+								} catch (NoSuchElementException e) {
+									Log.errorf("[%s] No fee found for data in request", ErrorCode.NO_FEE_FOUND);
+									return Response
+											.status(Status.INTERNAL_SERVER_ERROR)
+											.entity(new Errors(List.of(ErrorCode.NO_FEE_FOUND)))
+											.build();
+								}
 								GetFeeResponse response = new GetFeeResponse();
-								response.setFee(chooseFee(getFeesResponse, getFeeRequest.getPaymentMethod(), headers.getChannel()));
-								Log.debugf("getFee - response: %s", response);
+								response.setFee(fee);
+								Log.debugf("getFee - Response: %s", response);
 								return Response.status(Status.OK).entity(response).build();
 							});
 				});
 	
 	}
 
-	/**
-	 * Select the correct fee to return to the client based on the payment method and channel passed in request
-	 *
-	 * @param getFeesResponse the response of the getFees API on GEC
-	 * @param paymentMethod the payment method passed in request by the client
-	 * @param channel the channel passed in the headers by the client
-	 * @return the fee value
-	 */
-	private Long chooseFee(List<GecGetFeesResponse> getFeesResponse, String paymentMethod, String channel) {
-
-		// TODO: select correct fee by channel and paymentMethod
-		Log.debugf("Choose fee to return to the client ");
-		Optional<GecGetFeesResponse> getFeeResponseOpt =  getFeesResponse.stream().filter(fee ->
-				(StringUtils.equals(fee.getPaymentMethod(), gecPaymentMethodMap.getOrDefault(paymentMethod, "ANY")) &&
-						StringUtils.equals(fee.getTouchpoint(), gecTouchpointMap.getOrDefault(channel, "ANY")))).findFirst();
-
-		if (getFeeResponseOpt.isPresent()) return getFeeResponseOpt.get().getTaxPayerFee();
-		else {
-			// search for a default
-			getFeeResponseOpt =  getFeesResponse.stream().filter(fee ->
-					(StringUtils.equals(fee.getPaymentMethod(), "ANY") && StringUtils.equals(fee.getTouchpoint(), "ANY"))).findFirst();
-			if (getFeeResponseOpt.isPresent()) return getFeeResponseOpt.get().getTaxPayerFee();
-			else {
-				Log.errorf("[%s] Error choosing fee response ",ErrorCode.ERROR_CHOOSING_FEE_RESPONSE);
-				throw new InternalServerErrorException(Response
-					.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(new Errors(List.of(ErrorCode.ERROR_CHOOSING_FEE_RESPONSE)))
-					.build());
-			}
-		}
-
-	}
 
 	/**
 	 * Create the request to be sent to GEC to retrieve the fees
@@ -133,7 +113,7 @@ public class FeeCalculatorResource {
 	 */
 	private GecGetFeesRequest createGecGetFeeRequest(GetFeeRequest getFeeRequest, String pspId, String channel) {
 
-		Notice notice = getFeeRequest.getNotices().get(0); // TODO: change logic when or if GEC will expose the cart
+		Notice notice = getFeeRequest.getNotices().get(0); // TODO: change logic when GEC will expose the cart
 
 		List<String> idPspList = new ArrayList<>();
 		idPspList.add(pspId);
@@ -191,6 +171,9 @@ public class FeeCalculatorResource {
 								.build());
 					}
 				})
-				.map(AcquirerConfiguration::getPspConfigForGetFeeAndClosePayment);
+				.map(confResponse -> {
+					Log.debugf("retrievePSPConfiguration - response: %s ",confResponse);
+					return confResponse.getPspConfigForGetFeeAndClosePayment();
+				});
 	}
 }

@@ -39,77 +39,132 @@ class FeeCalculatorResourceTestIT {
 		// common headers
 		commonHeaders = new HashMap<>();
 		commonHeaders.put("RequestId", UUID.randomUUID().toString());
-		commonHeaders.put("Version", "1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay");
+		commonHeaders.put("Version", "1.0.0");
 		commonHeaders.put("AcquirerId", "4585625");
-		commonHeaders.put("Channel", "ATM");
+		commonHeaders.put("Channel", "POS");
 		commonHeaders.put("TerminalId", "0aB9wXyZ");
+		commonHeaders.put("MerchantId", "28405fHfk73x88D");
 		commonHeaders.put("SessionId", UUID.randomUUID().toString());
 
 	}
 
 	@Test
 	void testGetFees_200() {
-		GetFeeRequest bodyRequest = new GetFeeRequest();
-		bodyRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.toString());
-		
+
 		Transfer transfer = new Transfer();
-		transfer.setCategory("KTM");
-		transfer.setPaTaxCode("15376371009");
+		transfer.setCategory("");
+		transfer.setPaTaxCode("77777777777");
 		
 		Notice notice = new Notice();
-		notice.setAmount(1000L);
-		notice.setPaTaxCode("15376371009");
-		List<Notice> notices = new ArrayList<>();
-		notices.add(notice);
-		
-		List<Transfer> transfers = new ArrayList<>();
-		transfers.add(transfer);
-		notice.setTransfers(transfers);
-		bodyRequest.setNotices(notices);
+		notice.setAmount(10000L);
+		notice.setPaTaxCode("77777777777");
+		notice.setTransfers(List.of(transfer));
+
+		GetFeeRequest getFeeRequest = new GetFeeRequest();
+		getFeeRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.name());
+		getFeeRequest.setNotices(List.of(notice));
 		
 		Response response = given()
 				.contentType(ContentType.JSON)
 				.headers(commonHeaders)
 				.and()
-				.body(bodyRequest)
+				.body(getFeeRequest)
 				.when()
 				.post()
 				.then()
-				
 				.extract()
 				.response();
 			
 	        Assertions.assertEquals(200, response.statusCode());
 	        Assertions.assertNotNull(response.jsonPath().getString("fee"));
-	     
+			Assertions.assertEquals(50, response.jsonPath().getLong("fee"));
 	}
-	
-	@Test
-	void testGetFee_500_communicationWithGecFailed() {
 
-		GetFeeRequest body = new GetFeeRequest();
-		body.setPaymentMethod(PaymentMethods.CASH.toString());
-		
+	@Test
+	void testGetFee_500_gecEmptyBundleList() {
+
 		Transfer transfer = new Transfer();
-		transfer.setCategory("KTM");
-		transfer.setPaTaxCode("15376371009");
-		
+		transfer.setCategory("");
+		transfer.setPaTaxCode("00000001000");
+
 		Notice notice = new Notice();
-		notice.setAmount(1000L);
-		notice.setPaTaxCode("44476371009");
-		List<Notice> notices = new ArrayList<>();
-		notices.add(notice);
-		
-		List<Transfer> transfers = new ArrayList<>();
-		transfers.add(transfer);
-		notice.setTransfers(transfers);
-		body.setNotices(notices);
+		notice.setAmount(10000L);
+		notice.setPaTaxCode("00000001000");
+		notice.setTransfers(List.of(transfer));
+
+		GetFeeRequest getFeeRequest = new GetFeeRequest();
+		getFeeRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.name());
+		getFeeRequest.setNotices(List.of(notice));
 
 		Response response = given()
 				.contentType(ContentType.JSON)
 				.headers(commonHeaders)
 				.and()
-				.body(body)
+				.body(getFeeRequest)
+				.when()
+				.post()
+				.then()
+				.extract()
+				.response();
+
+		Assertions.assertEquals(500, response.statusCode());
+		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.NO_FEE_FOUND));
+		Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
+	}
+
+	@Test
+	void testGetFee_500_gecIntegrationError() {
+
+		Transfer transfer = new Transfer();
+		transfer.setCategory("");
+		transfer.setPaTaxCode("00000001001");
+
+		Notice notice = new Notice();
+		notice.setAmount(10000L);
+		notice.setPaTaxCode("00000001001");
+		notice.setTransfers(List.of(transfer));
+
+		GetFeeRequest getFeeRequest = new GetFeeRequest();
+		getFeeRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.name());
+		getFeeRequest.setNotices(List.of(notice));
+
+		Response response = given()
+				.contentType(ContentType.JSON)
+				.headers(commonHeaders)
+				.and()
+				.body(getFeeRequest)
+				.when()
+				.post()
+				.then()
+				.extract()
+				.response();
+
+		Assertions.assertEquals(500, response.statusCode());
+		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.ERROR_RETRIEVING_FEES));
+		Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
+	}
+	
+	@Test
+	void testGetFee_500_GecTimeout() {
+
+		Transfer transfer = new Transfer();
+		transfer.setCategory("");
+		transfer.setPaTaxCode("00000001002");
+
+		Notice notice = new Notice();
+		notice.setAmount(10000L);
+		notice.setPaTaxCode("00000001002");
+		notice.setTransfers(List.of(transfer));
+
+		GetFeeRequest getFeeRequest = new GetFeeRequest();
+		getFeeRequest.setPaymentMethod(PaymentMethods.PAGOBANCOMAT.name());
+		getFeeRequest.setNotices(List.of(notice));
+
+		Response response = given()
+				.contentType(ContentType.JSON)
+				.headers(commonHeaders)
+				.and()
+				.body(getFeeRequest)
 				.when()
 				.post()
 				.then()
@@ -161,41 +216,5 @@ class FeeCalculatorResourceTestIT {
         Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.UNKNOWN_ACQUIRER_ID));
         Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
 	}
-	
-	
-	@Test
-	void testGetFee_500_TimeoutCallingGec() {
-		GetFeeRequest bodyRequest = new GetFeeRequest();
-		bodyRequest.setPaymentMethod(PaymentMethods.DEBIT_CARD.toString());
-		
-		Transfer transfer = new Transfer();
-		transfer.setCategory("KTM");
-		transfer.setPaTaxCode("15376371009");
-		
-		Notice notice = new Notice();
-		notice.setAmount(1000L);
-		notice.setPaTaxCode("55576371009");
-		List<Notice> notices = new ArrayList<>();
-		notices.add(notice);
-		
-		List<Transfer> transfers = new ArrayList<>();
-		transfers.add(transfer);
-		notice.setTransfers(transfers);
-		bodyRequest.setNotices(notices);
-		
-		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(commonHeaders)
-				.and()
-				.body(bodyRequest)
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
-			
-		Assertions.assertEquals(500, response.statusCode());
-        Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.ERROR_RETRIEVING_FEES)); 
-        Assertions.assertNull(response.jsonPath().getJsonObject("fee"));
-	}
+
 }
