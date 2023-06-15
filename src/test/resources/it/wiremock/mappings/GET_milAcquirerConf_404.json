@@ -1,8 +1,9 @@
 {
-    "priority": 100,
+    
     "request": {
         "method": "GET",
-        "url": "/mil-acquirer-conf/confs/*"
+        "urlPathPattern": "/mil-acquirer-conf/confs/(.*)/psp"
+
     },
     "response": {
         "status": 404
