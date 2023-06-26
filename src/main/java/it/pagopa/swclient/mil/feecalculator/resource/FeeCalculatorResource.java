@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import jakarta.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -68,6 +69,7 @@ public class FeeCalculatorResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"NoticePayer", "SlavePos"})
 	public Uni<Response> getFee(@Valid @BeanParam CommonHeader headers,
 								@Valid @NotNull(message = "[" + ErrorCode.REQUEST_MUST_NOT_BE_EMPTY + "] request must not be empty") GetFeeRequest getFeeRequest) {
 		Log.debugf("getFee - Input parameters: %s, body %s", headers, getFeeRequest);

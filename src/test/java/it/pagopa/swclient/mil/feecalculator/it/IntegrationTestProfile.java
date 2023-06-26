@@ -2,6 +2,7 @@ package it.pagopa.swclient.mil.feecalculator.it;
 
 import com.google.common.collect.ImmutableList;
 import io.quarkus.test.junit.QuarkusTestProfile;
+import it.pagopa.swclient.mil.feecalculator.it.resource.IDPTestResource;
 import it.pagopa.swclient.mil.feecalculator.it.resource.WiremockTestResource;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class IntegrationTestProfile implements QuarkusTestProfile {
     @Override
     public List<TestResourceEntry> testResources() {
         return ImmutableList.of(
+                new TestResourceEntry(IDPTestResource.class),
                 new TestResourceEntry(WiremockTestResource.class)
         );
     }
