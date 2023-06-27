@@ -70,7 +70,7 @@ class PostmanCollectionTestIT implements DevServicesContext.ContextAware {
                 "--env-var", "MIL_IDP_BASE_URL=http://host.testcontainers.internal:" + exposedPort,
                 "--env-var", "idp_token_pos_username=NoticePayer",
                 "--reporters=htmlextra",
-                "--reporter-htmlextra-export", "reports/Payment_Notice_Service_Tests.html");
+                "--reporter-htmlextra-export", "reports/Fee_Calculator_Service_Tests.html");
 
         newmanContainer.withFileSystemBind("./target/newman-report/", "/etc/newman/reports");
         newmanContainer.withCopyToContainer(MountableFile.forHostPath(Path.of("./src/test/postman/Fee_Calculator_Service.postman_collection.json")),

@@ -2225,11 +2225,50 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									""
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"const schema = {",
+									"  \"properties\": {",
+									"    \"errors\": {",
+									"      \"type\": \"array\"",
+									"    }",
+									"  }",
+									"};",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test(\"errors containes only one element\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.have.length(1);",
+									"});"
 								]
 							}
 						}
 					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -2237,7 +2276,7 @@
 			"name": "2. Recupero fee",
 			"item": [
 				{
-					"name": "0. getPosAccessToken",
+					"name": "0. Recupero Token POS",
 					"event": [
 						{
 							"listen": "test",
