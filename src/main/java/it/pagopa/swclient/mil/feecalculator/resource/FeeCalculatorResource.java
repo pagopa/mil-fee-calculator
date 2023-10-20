@@ -3,17 +3,6 @@
  */
 package it.pagopa.swclient.mil.feecalculator.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import jakarta.annotation.security.RolesAllowed;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.resteasy.reactive.ClientWebApplicationException;
-
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import it.pagopa.swclient.mil.bean.CommonHeader;
@@ -30,17 +19,22 @@ import it.pagopa.swclient.mil.feecalculator.client.bean.GecTransfer;
 import it.pagopa.swclient.mil.feecalculator.client.bean.Psp;
 import it.pagopa.swclient.mil.feecalculator.client.bean.PspConfiguration;
 import it.pagopa.swclient.mil.feecalculator.util.FeeSelector;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.InternalServerErrorException;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.ClientWebApplicationException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 
 @Path("/fees")
@@ -54,8 +48,8 @@ public class FeeCalculatorResource {
 
 	@RestClient
 	FeeService feeService;
-	
-	@RestClient
+
+	@Inject
 	MilRestService milRestService;
 	
 	/**
@@ -141,7 +135,9 @@ public class FeeCalculatorResource {
 		gecGetFeesRequest.setPaymentAmount(notice.getAmount());
 		gecGetFeesRequest.setPrimaryCreditorInstitution(notice.getPaTaxCode());
 		// remapping paymentMethod and touchpoint based on property
-		gecGetFeesRequest.setPaymentMethod(gecPaymentMethodMap.getOrDefault(getFeeRequest.getPaymentMethod(), "ANY"));
+		if (getFeeRequest.getPaymentMethod() != null) {
+			gecGetFeesRequest.setPaymentMethod(gecPaymentMethodMap.getOrDefault(getFeeRequest.getPaymentMethod(), "ANY"));
+		}
 		gecGetFeesRequest.setTouchpoint(gecTouchpointMap.getOrDefault(channel, "ANY"));
 		gecGetFeesRequest.setTransferList(transferList);
 
@@ -159,7 +155,7 @@ public class FeeCalculatorResource {
 	private Uni<PspConfiguration> retrievePspConfiguration(String requestId, String acquirerId) {
 		Log.debugf("retrievePSPConfiguration - requestId: %s acquirerId: %s ", requestId, acquirerId);
 
-		return milRestService.getPspConfiguration(requestId, acquirerId)
+		return milRestService.getPspConfiguration(acquirerId)
 				.onFailure().transform(t -> {
 					if (t instanceof ClientWebApplicationException webEx && webEx.getResponse().getStatus() == 404) {
 						Log.errorf(t, "[%s] Missing psp configuration for acquirerId", ErrorCode.UNKNOWN_ACQUIRER_ID);

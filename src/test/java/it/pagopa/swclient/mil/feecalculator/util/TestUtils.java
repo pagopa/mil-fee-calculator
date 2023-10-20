@@ -78,7 +78,6 @@ public class TestUtils {
         }
 
         return Stream.of(
-                Arguments.of(setAndGet(FeeCalculatorTestData.getFeeRequest(), "paymentMethod", null), ErrorCode.PAYMENT_METHOD_MUST_NOT_BE_NULL),
                 Arguments.of(setAndGet(FeeCalculatorTestData.getFeeRequest(), "paymentMethod", "TEST"), ErrorCode.PAYMENT_METHOD_MUST_MATCH_REGEXP),
                 Arguments.of(setAndGet(FeeCalculatorTestData.getFeeRequest(), "notices", null), ErrorCode.NOTICES_MUST_NOT_BE_NULL),
                 Arguments.of(setAndGet(FeeCalculatorTestData.getFeeRequest(), "notices", notices), ErrorCode.NOTICES_LIST_EXCEEDED_SIZE),
