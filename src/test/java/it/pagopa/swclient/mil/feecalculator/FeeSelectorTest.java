@@ -132,4 +132,63 @@ public class FeeSelectorTest {
                 () -> FeeSelector.getFeeByPaymentMethodAndTouchpoint(bundleOptions, "CP", "POS"));
     }
 
+    @Test
+    void testGetFeeByPaymentMethodAndTouchpoint_paymentNull() {
+        long fee = FeeSelector.getFeeByPaymentMethodAndTouchpoint(gecGetFeesResponse.getBundleOptions(),
+                null, "ATM");
+        Assertions.assertEquals(50, fee);
+    }
+
+    @Test
+    void testGetFeeByPaymentMethodAndTouchpoint_bundleOptionPaymentNull() {
+        GecGetFeesResponse response = new GecGetFeesResponse();
+
+        BundleOption bundleOption = new BundleOption();
+        bundleOption.setTaxPayerFee(200);
+        bundleOption.setPrimaryCiIncurredFee(0);
+        bundleOption.setPaymentMethod(null);
+        bundleOption.setTouchpoint("ANY");
+        bundleOption.setIdBundle("683589f9-9471-4bd4-ba44-a1044aea4dcc");
+        bundleOption.setBundleName("soft-cli-test9");
+        bundleOption.setBundleDescription("pacchetto di test per software client");
+        bundleOption.setIdCiBundle(null);
+        bundleOption.setIdPsp("AGID_01");
+        bundleOption.setIdChannel(null);
+        bundleOption.setIdBrokerPsp(null);
+        bundleOption.setOnUs(false);
+        bundleOption.setAbi(null);
+
+        response.setBundleOptions(List.of(bundleOption));
+
+        long fee = FeeSelector.getFeeByPaymentMethodAndTouchpoint(response.getBundleOptions(),
+                "CP", "ATM");
+        Assertions.assertEquals(200, fee);
+    }
+
+    @Test
+    void testGetFeeByPaymentMethodAndTouchpoint_touchpointAny() {
+        GecGetFeesResponse response = new GecGetFeesResponse();
+
+        BundleOption bundleOption = new BundleOption();
+        bundleOption.setTaxPayerFee(200);
+        bundleOption.setPrimaryCiIncurredFee(0);
+        bundleOption.setPaymentMethod(null);
+        bundleOption.setTouchpoint("ANY");
+        bundleOption.setIdBundle("683589f9-9471-4bd4-ba44-a1044aea4dcc");
+        bundleOption.setBundleName("soft-cli-test9");
+        bundleOption.setBundleDescription("pacchetto di test per software client");
+        bundleOption.setIdCiBundle(null);
+        bundleOption.setIdPsp("AGID_01");
+        bundleOption.setIdChannel(null);
+        bundleOption.setIdBrokerPsp(null);
+        bundleOption.setOnUs(false);
+        bundleOption.setAbi(null);
+
+        response.setBundleOptions(List.of(bundleOption));
+
+        long fee = FeeSelector.getFeeByPaymentMethodAndTouchpoint(response.getBundleOptions(),
+                null, "ATM");
+        Assertions.assertEquals(200, fee);
+    }
+
 }
