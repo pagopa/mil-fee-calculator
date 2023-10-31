@@ -29,7 +29,6 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -47,7 +46,6 @@ class FeeCalculatorResourceTest {
 	FeeService feeService;
 	
 	@InjectMock
-	@RestClient
 	MilRestService milRestService;
 
 	Map<String, String> milHeaders;
@@ -141,7 +139,7 @@ class FeeCalculatorResourceTest {
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -166,12 +164,10 @@ class FeeCalculatorResourceTest {
 				response.jsonPath().getLong("fee"));
 
 		// verify request to the mil rest client
-		ArgumentCaptor<String> requestIdCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<String> acquirerIdCaptor = ArgumentCaptor.forClass(String.class);
 
-		Mockito.verify(milRestService).getPspConfiguration(requestIdCaptor.capture(), acquirerIdCaptor.capture());
+		Mockito.verify(milRestService).getPspConfiguration(acquirerIdCaptor.capture());
 
-		Assertions.assertEquals(milHeaders.get("RequestId"), requestIdCaptor.getValue());
 		Assertions.assertEquals(milHeaders.get("AcquirerId"), acquirerIdCaptor.getValue());
 
 		// verify request to GEC
@@ -210,7 +206,7 @@ class FeeCalculatorResourceTest {
 		getFeeRequest.setPaymentMethod(milPaymentMethod);
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -248,7 +244,7 @@ class FeeCalculatorResourceTest {
 		headers.put("Channel", milTouchpoint);
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -340,7 +336,7 @@ class FeeCalculatorResourceTest {
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -374,7 +370,7 @@ class FeeCalculatorResourceTest {
 		gecEmptyResponse.setBundleOptions(new ArrayList<>());
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -402,7 +398,7 @@ class FeeCalculatorResourceTest {
 	void testGetFee_500_gecError() {
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -430,7 +426,7 @@ class FeeCalculatorResourceTest {
 	void testGetFee_500_pspNotFound() {
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
 
 		Response response = given()
@@ -454,7 +450,7 @@ class FeeCalculatorResourceTest {
 	void testGetFee_500_milTimeout() {
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().failure(new TimeoutException()));
 
 		Response response = given()
