@@ -139,7 +139,7 @@ class FeeCalculatorResourceTest {
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -166,7 +166,7 @@ class FeeCalculatorResourceTest {
 		// verify request to the mil rest client
 		ArgumentCaptor<String> acquirerIdCaptor = ArgumentCaptor.forClass(String.class);
 
-		Mockito.verify(milRestService).getPspConfiguration(acquirerIdCaptor.capture());
+		Mockito.verify(milRestService).getPspConfiguration(Mockito.any(String.class), acquirerIdCaptor.capture());
 
 		Assertions.assertEquals(milHeaders.get("AcquirerId"), acquirerIdCaptor.getValue());
 
@@ -206,7 +206,7 @@ class FeeCalculatorResourceTest {
 		getFeeRequest.setPaymentMethod(milPaymentMethod);
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -244,7 +244,7 @@ class FeeCalculatorResourceTest {
 		headers.put("Channel", milTouchpoint);
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -336,7 +336,7 @@ class FeeCalculatorResourceTest {
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -370,7 +370,7 @@ class FeeCalculatorResourceTest {
 		gecEmptyResponse.setBundleOptions(new ArrayList<>());
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -398,7 +398,7 @@ class FeeCalculatorResourceTest {
 	void testGetFee_500_gecError() {
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
@@ -426,7 +426,7 @@ class FeeCalculatorResourceTest {
 	void testGetFee_500_pspNotFound() {
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
 
 		Response response = given()
@@ -450,7 +450,7 @@ class FeeCalculatorResourceTest {
 	void testGetFee_500_milTimeout() {
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class)))
+				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
 				.thenReturn(Uni.createFrom().failure(new TimeoutException()));
 
 		Response response = given()

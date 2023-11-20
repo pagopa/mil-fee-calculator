@@ -40,6 +40,8 @@ public final class ErrorCode {
 	public static final String REQUEST_MUST_NOT_BE_EMPTY 						= MODULE_ID + "000014";
 
 	public static final String AUTHENTICATION_ERROR								= MODULE_ID + "000015";
+	public static final String ERROR_CALLING_AZUREAD_REST_SERVICES 				= MODULE_ID + "000016";
+	public static final String AZUREAD_ACCESS_TOKEN_IS_NULL                     = MODULE_ID + "000017";
 		
 	private ErrorCode() {
 		// This class cannot be instantiated!
