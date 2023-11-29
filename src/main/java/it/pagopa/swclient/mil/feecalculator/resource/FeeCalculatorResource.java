@@ -12,6 +12,7 @@ import it.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
 import it.pagopa.swclient.mil.feecalculator.bean.GetFeeResponse;
 import it.pagopa.swclient.mil.feecalculator.bean.Notice;
 import it.pagopa.swclient.mil.feecalculator.bean.Transfer;
+import it.pagopa.swclient.mil.feecalculator.client.AzureADRestClient;
 import it.pagopa.swclient.mil.feecalculator.client.FeeService;
 import it.pagopa.swclient.mil.feecalculator.client.MilRestService;
 import it.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
@@ -51,6 +52,16 @@ public class FeeCalculatorResource {
 
 	@Inject
 	MilRestService milRestService;
+
+	@RestClient
+	AzureADRestClient azureADRestClient;
+
+	@ConfigProperty(name = "azure-auth-api.identity")
+	String identity;
+
+	public static final String VAULT = "https://vault.azure.net";
+
+	private static final String BEARER = "Bearer ";
 	
 	/**
 	 * API to retrieve the commissions fees. 
@@ -82,7 +93,7 @@ public class FeeCalculatorResource {
 							})
 							.map(getFeesResponse -> {
 								Log.debugf("Received GEC response: %s", getFeesResponse);
-								long fee = 0;
+								long fee;
 								try {
 									fee = FeeSelector.getFirstFee(getFeesResponse.getBundleOptions());
 								} catch (NoSuchElementException e) {
@@ -155,26 +166,44 @@ public class FeeCalculatorResource {
 	private Uni<PspConfiguration> retrievePspConfiguration(String requestId, String acquirerId) {
 		Log.debugf("retrievePSPConfiguration - requestId: %s acquirerId: %s ", requestId, acquirerId);
 
-		return milRestService.getPspConfiguration(acquirerId)
+		return azureADRestClient.getAccessToken(identity, VAULT)
 				.onFailure().transform(t -> {
-					if (t instanceof ClientWebApplicationException webEx && webEx.getResponse().getStatus() == 404) {
-						Log.errorf(t, "[%s] Missing psp configuration for acquirerId", ErrorCode.UNKNOWN_ACQUIRER_ID);
-						return new InternalServerErrorException(Response
+					Log.errorf(t, "[%s] Error while calling Azure AD rest service", ErrorCode.ERROR_CALLING_AZUREAD_REST_SERVICES);
+
+					return new InternalServerErrorException(Response
+							.status(Response.Status.INTERNAL_SERVER_ERROR)
+							.entity(new Errors(List.of(ErrorCode.ERROR_CALLING_AZUREAD_REST_SERVICES)))
+							.build());
+				}).chain(token -> {
+					Log.debugf("FeeCalculatorResource -> retrievePspConfiguration: Azure AD service returned a 200 status, response token: [%s]", token);
+
+					if (token.getToken() == null) {
+						return Uni.createFrom().failure(new InternalServerErrorException(Response
 								.status(Response.Status.INTERNAL_SERVER_ERROR)
-								.entity(new Errors(List.of(ErrorCode.UNKNOWN_ACQUIRER_ID)))
-								.build());
+								.entity(new Errors(List.of(ErrorCode.AZUREAD_ACCESS_TOKEN_IS_NULL)))
+								.build()));
 					}
-					else {
-						Log.errorf(t, "[%s] Error retrieving the psp configuration", ErrorCode.ERROR_CALLING_MIL_REST_SERVICES);
-						return new InternalServerErrorException(Response
-								.status(Response.Status.INTERNAL_SERVER_ERROR)
-								.entity(new Errors(List.of(ErrorCode.ERROR_CALLING_MIL_REST_SERVICES)))
-								.build());
-					}
-				})
-				.map(confResponse -> {
-					Log.debugf("retrievePSPConfiguration - response: %s ",confResponse);
-					return confResponse.getPspConfigForGetFeeAndClosePayment();
+					return milRestService.getPspConfiguration(BEARER + token.getToken(), acquirerId)
+							.onFailure().transform(t -> {
+								if (t instanceof ClientWebApplicationException webEx && webEx.getResponse().getStatus() == 404) {
+									Log.errorf(t, "[%s] Missing psp configuration for acquirerId", ErrorCode.UNKNOWN_ACQUIRER_ID);
+									return new InternalServerErrorException(Response
+											.status(Response.Status.INTERNAL_SERVER_ERROR)
+											.entity(new Errors(List.of(ErrorCode.UNKNOWN_ACQUIRER_ID)))
+											.build());
+								}
+								else {
+									Log.errorf(t, "[%s] Error retrieving the psp configuration", ErrorCode.ERROR_CALLING_MIL_REST_SERVICES);
+									return new InternalServerErrorException(Response
+											.status(Response.Status.INTERNAL_SERVER_ERROR)
+											.entity(new Errors(List.of(ErrorCode.ERROR_CALLING_MIL_REST_SERVICES)))
+											.build());
+								}
+							})
+							.map(confResponse -> {
+								Log.debugf("retrievePSPConfiguration - response: %s ",confResponse);
+								return confResponse.getPspConfigForGetFeeAndClosePayment();
+							});
 				});
 	}
 }

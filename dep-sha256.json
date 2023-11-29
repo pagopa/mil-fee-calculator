@@ -1,11 +1,11 @@
 {
   "dependencies": [
     {
-      "id": "it.pagopa.swclient.mil:common:jar:2.0.2",
+      "id": "it.pagopa.swclient.mil:common:jar:2.1.0",
       "artifactId": "common",
       "groupId": "it.pagopa.swclient.mil",
-      "version": "2.0.2",
-      "sha256": "ntDsMD3I1EDFqEs4rg-6ZuUG5fASYx_71DIxCz8fwmw="
+      "version": "2.1.0",
+      "sha256": "8SAtPJV3xz7X2T5U5wEBWRDmAND00hNi1DjjsMsSPPM="
     },
     {
       "id": "io.quarkus:quarkus-resteasy-reactive-jackson:jar:3.1.1.Final",
@@ -477,6 +477,13 @@
       "sha256": "8XkfMr5OWeFX_srCcjXP9HIu5iWL4qMZM78JwfN_nTI="
     },
     {
+      "id": "com.aayushatharva.brotli4j:native-windows-x86_64:jar:1.11.0",
+      "artifactId": "native-windows-x86_64",
+      "groupId": "com.aayushatharva.brotli4j",
+      "version": "1.11.0",
+      "sha256": "PU-CzdPdMiuS6YdnM73pgqMvNy5f78OnhfqDWjmVoTU="
+    },
+    {
       "id": "com.aayushatharva.brotli4j:native-osx-aarch64:jar:1.11.0",
       "artifactId": "native-osx-aarch64",
       "groupId": "com.aayushatharva.brotli4j",
@@ -489,13 +496,6 @@
       "groupId": "com.aayushatharva.brotli4j",
       "version": "1.11.0",
       "sha256": "bD-neL_jA9OBHsi6E-qQisZH9ymMf_HGOptXgpF18m0="
-    },
-    {
-      "id": "com.aayushatharva.brotli4j:native-windows-x86_64:jar:1.11.0",
-      "artifactId": "native-windows-x86_64",
-      "groupId": "com.aayushatharva.brotli4j",
-      "version": "1.11.0",
-      "sha256": "PU-CzdPdMiuS6YdnM73pgqMvNy5f78OnhfqDWjmVoTU="
     },
     {
       "id": "io.netty:netty-codec-haproxy:jar:4.1.92.Final",
