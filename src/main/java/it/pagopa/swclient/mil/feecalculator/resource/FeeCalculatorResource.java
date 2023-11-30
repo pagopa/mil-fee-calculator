@@ -59,7 +59,7 @@ public class FeeCalculatorResource {
 	@ConfigProperty(name = "azure-auth-api.identity")
 	String identity;
 
-	public static final String STORAGE = "https://storage.azure.com";
+	public static final String VAULT = "https://vault.azure.net";
 
 	private static final String BEARER = "Bearer ";
 	
@@ -166,7 +166,7 @@ public class FeeCalculatorResource {
 	private Uni<PspConfiguration> retrievePspConfiguration(String requestId, String acquirerId) {
 		Log.debugf("retrievePSPConfiguration - requestId: %s acquirerId: %s ", requestId, acquirerId);
 
-		return azureADRestClient.getAccessToken(identity, STORAGE)
+		return azureADRestClient.getAccessToken(identity, VAULT)
 				.onFailure().transform(t -> {
 					Log.errorf(t, "[%s] Error while calling Azure AD rest service", ErrorCode.ERROR_CALLING_AZUREAD_REST_SERVICES);
 
