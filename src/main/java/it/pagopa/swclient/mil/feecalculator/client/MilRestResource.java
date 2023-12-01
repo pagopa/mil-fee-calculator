@@ -1,6 +1,7 @@
 package it.pagopa.swclient.mil.feecalculator.client;
 
 import jakarta.ws.rs.HeaderParam;
+import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import io.smallrye.mutiny.Uni;
 import it.pagopa.swclient.mil.feecalculator.client.bean.AcquirerConfiguration;
@@ -21,6 +22,7 @@ public interface MilRestResource {
 	 */
 	@GET
 	@Path("/acquirers/{acquirerId}.json")
+	@ClientHeaderParam(name = "x-ms-version", value = "${azure-storage-api.version}")
 	Uni<AcquirerConfiguration> getPspConfiguration(
 			@HeaderParam("Authorization") String authorization,
 			@PathParam(value = "acquirerId") String acquirerId);
