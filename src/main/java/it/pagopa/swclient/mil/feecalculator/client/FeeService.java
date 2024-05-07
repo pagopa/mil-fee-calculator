@@ -20,7 +20,7 @@ public interface FeeService {
 	/**
 	 * Client of the getFees API exposed by GEC
 	 *
-	 * @param requestId the requestId passed by the client
+	 * @param requestId         the requestId passed by the client
 	 * @param gecGetFeesRequest the request to GEC
 	 * @return the response from GEC
 	 */

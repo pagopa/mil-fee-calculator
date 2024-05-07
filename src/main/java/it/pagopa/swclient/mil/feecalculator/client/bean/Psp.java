@@ -3,7 +3,6 @@
  */
 package it.pagopa.swclient.mil.feecalculator.client.bean;
 
-
 public class Psp {
 	/**
 	 * Identifier of the PSP
@@ -32,5 +31,5 @@ public class Psp {
 		builder.append("]");
 		return builder.toString();
 	}
-	
+
 }

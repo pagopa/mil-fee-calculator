@@ -11,7 +11,8 @@ public class AcquirerConfiguration {
 	private PspConfiguration pspConfigForVerifyAndActivate;
 
 	/**
-	 * The psp configuration to be used when calling the "close" API of the node and the "getFee" api of GEC
+	 * The psp configuration to be used when calling the "close" API of the node and the "getFee" api of
+	 * GEC
 	 */
 	private PspConfiguration pspConfigForGetFeeAndClosePayment;
 

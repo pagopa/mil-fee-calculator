@@ -16,7 +16,7 @@ public class Transfer {
 	@NotNull(message = "[" + ErrorCode.TRANSFERS_PA_TAX_CODE_MUST_NOT_BE_NULL + "] transfer.paTaxCode must not be null")
 	@Pattern(regexp = "^\\d{11}$", message = "[" + ErrorCode.TRANSFERS_PA_TAX_CODE_MUST_MATCH_REGEXP + "] transfer.paTaxCode list must match \"{regexp}\"")
 	private String paTaxCode;
-	
+
 	/**
 	 * Transfer category
 	 */
@@ -37,7 +37,7 @@ public class Transfer {
 	public void setPaTaxCode(String paTaxCode) {
 		this.paTaxCode = paTaxCode;
 	}
-	
+
 	/**
 	 * @return the category
 	 */
