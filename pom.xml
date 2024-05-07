@@ -7,21 +7,22 @@
 	<version>1.2.1</version>
 	<description>Fee Calculator Microservice for Multi-channel Integration Layer of SW Client Project</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<compiler-plugin.version>3.11.0</compiler-plugin.version>
-		<surefire-plugin.version>3.0.0</surefire-plugin.version>
-		<sonar-plugin.version>3.9.1.2184</sonar-plugin.version>
+		<compiler-plugin.version>3.12.1</compiler-plugin.version>
+		<surefire-plugin.version>3.2.5</surefire-plugin.version>
+		<sonar-plugin.version>3.11.0.3922</sonar-plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-		<quarkus.platform.version>3.1.1.Final</quarkus.platform.version>
+		<quarkus.platform.version>3.10.0</quarkus.platform.version>
 		<skipITs>true</skipITs>
-		<depcheck-plugin.version>1.1.1</depcheck-plugin.version>
-		<common.version>2.1.0</common.version>
+		<depcheck-plugin.version>1.2.1</depcheck-plugin.version>
+		<common.version>2.2.1</common.version>
+		<otel-exporter-azure.version>3.8.3.0</otel-exporter-azure.version>
 		<sonar.host.url>https://sonarcloud.io:443/</sonar.host.url>
 		<sonar.organization>pagopa</sonar.organization>
 		<sonar.projectKey>pagopa_mil-fee-calculator</sonar.projectKey>
@@ -48,7 +49,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+			<artifactId>quarkus-rest-jackson</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
@@ -64,11 +65,11 @@
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-resteasy-reactive</artifactId>
+			<artifactId>quarkus-rest</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-rest-client-reactive</artifactId>
+			<artifactId>quarkus-rest-client-jackson</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
@@ -124,6 +125,23 @@
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- Observability -->
+		<!-- Logging -->
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-logging-json</artifactId>
+		</dependency>
+		<!-- Tracing -->
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-opentelemetry</artifactId>
+		</dependency>
+		<!-- OpenTelemetry exporter for Azure Application Insights -->
+		<dependency>
+			<groupId>io.quarkiverse.opentelemetry.exporter</groupId>
+			<artifactId>quarkus-opentelemetry-exporter-azure</artifactId>
+			<version>${otel-exporter-azure.version}</version>
 		</dependency>
 	</dependencies>
 	<repositories>
@@ -214,6 +232,7 @@
 				</executions>
 				<configuration>
 					<fileName>dep-sha256.json</fileName>
+					<addFileName>dep-sha256-man.json</addFileName>
 					<includePlugins>false</includePlugins>
 					<includeParent>false</includeParent>
 				</configuration>
@@ -233,6 +252,7 @@
 				<quarkus.package.type>native</quarkus.package.type>
 			</properties>
 		</profile>
+
 		<!-- To execute SCA with SonarCloud:                                      -->
 		<!--   1. export SONAR_TOKEN=<sonar token provided by PagoPA DevOps team> -->
 		<!--   2. mvn verify -Pvalidate                                       -->
