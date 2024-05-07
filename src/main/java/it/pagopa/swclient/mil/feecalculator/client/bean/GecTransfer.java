@@ -14,15 +14,15 @@ public class GecTransfer {
 	 * 
 	 */
 	private Boolean digitalStamp;
-	
+
 	/*
 	 * 
 	 */
 	private String transferCategory;
 
-
 	/**
 	 * Gets creditorInstitution
+	 * 
 	 * @return value of creditorInstitution
 	 */
 	public String getCreditorInstitution() {
@@ -31,6 +31,7 @@ public class GecTransfer {
 
 	/**
 	 * Sets creditorInstitution
+	 * 
 	 * @param creditorInstitution value of creditorInstitution
 	 */
 	public void setCreditorInstitution(String creditorInstitution) {
@@ -39,6 +40,7 @@ public class GecTransfer {
 
 	/**
 	 * Gets digitalStamp
+	 * 
 	 * @return value of digitalStamp
 	 */
 	public Boolean isDigitalStamp() {
@@ -47,6 +49,7 @@ public class GecTransfer {
 
 	/**
 	 * Sets digitalStamp
+	 * 
 	 * @param digitalStamp value of digitalStamp
 	 */
 	public void setDigitalStamp(Boolean digitalStamp) {
@@ -55,6 +58,7 @@ public class GecTransfer {
 
 	/**
 	 * Gets transferCategory
+	 * 
 	 * @return value of transferCategory
 	 */
 	public String getTransferCategory() {
@@ -63,6 +67,7 @@ public class GecTransfer {
 
 	/**
 	 * Sets transferCategory
+	 * 
 	 * @param transferCategory value of transferCategory
 	 */
 	public void setTransferCategory(String transferCategory) {

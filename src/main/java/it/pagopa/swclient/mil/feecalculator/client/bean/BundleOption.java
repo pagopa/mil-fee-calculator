@@ -69,6 +69,7 @@ public class BundleOption {
 
 	/**
 	 * Gets abi
+	 * 
 	 * @return value of abi
 	 */
 	public String getAbi() {
@@ -77,6 +78,7 @@ public class BundleOption {
 
 	/**
 	 * Sets abi
+	 * 
 	 * @param abi value of abi
 	 */
 	public void setAbi(String abi) {
@@ -85,6 +87,7 @@ public class BundleOption {
 
 	/**
 	 * Gets bundleDescription
+	 * 
 	 * @return value of bundleDescription
 	 */
 	public String getBundleDescription() {
@@ -93,6 +96,7 @@ public class BundleOption {
 
 	/**
 	 * Sets bundleDescription
+	 * 
 	 * @param bundleDescription value of bundleDescription
 	 */
 	public void setBundleDescription(String bundleDescription) {
@@ -101,6 +105,7 @@ public class BundleOption {
 
 	/**
 	 * Gets bundleName
+	 * 
 	 * @return value of bundleName
 	 */
 	public String getBundleName() {
@@ -109,6 +114,7 @@ public class BundleOption {
 
 	/**
 	 * Sets bundleName
+	 * 
 	 * @param bundleName value of bundleName
 	 */
 	public void setBundleName(String bundleName) {
@@ -117,6 +123,7 @@ public class BundleOption {
 
 	/**
 	 * Gets idBrokerPsp
+	 * 
 	 * @return value of idBrokerPsp
 	 */
 	public String getIdBrokerPsp() {
@@ -125,6 +132,7 @@ public class BundleOption {
 
 	/**
 	 * Sets idBrokerPsp
+	 * 
 	 * @param idBrokerPsp value of idBrokerPsp
 	 */
 	public void setIdBrokerPsp(String idBrokerPsp) {
@@ -133,6 +141,7 @@ public class BundleOption {
 
 	/**
 	 * Gets idBundle
+	 * 
 	 * @return value of idBundle
 	 */
 	public String getIdBundle() {
@@ -141,6 +150,7 @@ public class BundleOption {
 
 	/**
 	 * Sets idBundle
+	 * 
 	 * @param idBundle value of idBundle
 	 */
 	public void setIdBundle(String idBundle) {
@@ -149,6 +159,7 @@ public class BundleOption {
 
 	/**
 	 * Gets idChannel
+	 * 
 	 * @return value of idChannel
 	 */
 	public String getIdChannel() {
@@ -157,6 +168,7 @@ public class BundleOption {
 
 	/**
 	 * Sets idChannel
+	 * 
 	 * @param idChannel value of idChannel
 	 */
 	public void setIdChannel(String idChannel) {
@@ -165,6 +177,7 @@ public class BundleOption {
 
 	/**
 	 * Gets idCiBundle
+	 * 
 	 * @return value of idCiBundle
 	 */
 	public String getIdCiBundle() {
@@ -173,6 +186,7 @@ public class BundleOption {
 
 	/**
 	 * Sets idCiBundle
+	 * 
 	 * @param idCiBundle value of idCiBundle
 	 */
 	public void setIdCiBundle(String idCiBundle) {
@@ -181,6 +195,7 @@ public class BundleOption {
 
 	/**
 	 * Gets idPsp
+	 * 
 	 * @return value of idPsp
 	 */
 	public String getIdPsp() {
@@ -189,6 +204,7 @@ public class BundleOption {
 
 	/**
 	 * Sets idPsp
+	 * 
 	 * @param idPsp value of idPsp
 	 */
 	public void setIdPsp(String idPsp) {
@@ -197,6 +213,7 @@ public class BundleOption {
 
 	/**
 	 * Gets onUs
+	 * 
 	 * @return value of onUs
 	 */
 	public Boolean getOnUs() {
@@ -205,6 +222,7 @@ public class BundleOption {
 
 	/**
 	 * Sets onUs
+	 * 
 	 * @param onUs value of onUs
 	 */
 	public void setOnUs(Boolean onUs) {
@@ -213,6 +231,7 @@ public class BundleOption {
 
 	/**
 	 * Gets paymentMethod
+	 * 
 	 * @return value of paymentMethod
 	 */
 	public String getPaymentMethod() {
@@ -221,6 +240,7 @@ public class BundleOption {
 
 	/**
 	 * Sets paymentMethod
+	 * 
 	 * @param paymentMethod value of paymentMethod
 	 */
 	public void setPaymentMethod(String paymentMethod) {
@@ -229,6 +249,7 @@ public class BundleOption {
 
 	/**
 	 * Gets primaryCiIncurredFee
+	 * 
 	 * @return value of primaryCiIncurredFee
 	 */
 	public long getPrimaryCiIncurredFee() {
@@ -237,6 +258,7 @@ public class BundleOption {
 
 	/**
 	 * Sets primaryCiIncurredFee
+	 * 
 	 * @param primaryCiIncurredFee value of primaryCiIncurredFee
 	 */
 	public void setPrimaryCiIncurredFee(long primaryCiIncurredFee) {
@@ -245,6 +267,7 @@ public class BundleOption {
 
 	/**
 	 * Gets taxPayerFee
+	 * 
 	 * @return value of taxPayerFee
 	 */
 	public long getTaxPayerFee() {
@@ -253,6 +276,7 @@ public class BundleOption {
 
 	/**
 	 * Sets taxPayerFee
+	 * 
 	 * @param taxPayerFee value of taxPayerFee
 	 */
 	public void setTaxPayerFee(long taxPayerFee) {
@@ -261,6 +285,7 @@ public class BundleOption {
 
 	/**
 	 * Gets touchpoint
+	 * 
 	 * @return value of touchpoint
 	 */
 	public String getTouchpoint() {
@@ -269,6 +294,7 @@ public class BundleOption {
 
 	/**
 	 * Sets touchpoint
+	 * 
 	 * @param touchpoint value of touchpoint
 	 */
 	public void setTouchpoint(String touchpoint) {
@@ -278,31 +304,31 @@ public class BundleOption {
 	@Override
 	public String toString() {
 		return new StringBuilder("BundleOption [abi=")
-				.append(abi)
-				.append(", bundleDescription=")
-				.append(bundleDescription)
-				.append(", bundleName=")
-				.append(bundleName)
-				.append(", idBrokerPsp=")
-				.append(idBrokerPsp)
-				.append(", idBundle=")
-				.append(idBundle)
-				.append(", idChannel=")
-				.append(idChannel)
-				.append(", idCiBundle=")
-				.append(idCiBundle)
-				.append(", idPsp=")
-				.append(idPsp)
-				.append(", onUs=")
-				.append(onUs)
-				.append(", paymentMethod=")
-				.append(paymentMethod)
-				.append(", primaryCiIncurredFee=")
-				.append(primaryCiIncurredFee)
-				.append(", taxPayerFee=")
-				.append(taxPayerFee)
-				.append(", touchpoint=")
-				.append(touchpoint)
-				.append("]").toString();
+			.append(abi)
+			.append(", bundleDescription=")
+			.append(bundleDescription)
+			.append(", bundleName=")
+			.append(bundleName)
+			.append(", idBrokerPsp=")
+			.append(idBrokerPsp)
+			.append(", idBundle=")
+			.append(idBundle)
+			.append(", idChannel=")
+			.append(idChannel)
+			.append(", idCiBundle=")
+			.append(idCiBundle)
+			.append(", idPsp=")
+			.append(idPsp)
+			.append(", onUs=")
+			.append(onUs)
+			.append(", paymentMethod=")
+			.append(paymentMethod)
+			.append(", primaryCiIncurredFee=")
+			.append(primaryCiIncurredFee)
+			.append(", taxPayerFee=")
+			.append(taxPayerFee)
+			.append(", touchpoint=")
+			.append(touchpoint)
+			.append("]").toString();
 	}
 }

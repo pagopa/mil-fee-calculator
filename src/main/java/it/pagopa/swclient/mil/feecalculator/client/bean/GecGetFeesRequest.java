@@ -11,34 +11,34 @@ import jakarta.validation.constraints.NotNull;
  * The request to the getFees API exposed by GEC
  */
 public class GecGetFeesRequest {
-	
+
 	/**
 	 * 
 	 */
 	private List<Psp> idPspList;
-	
+
 	/**
 	 * 
 	 */
 	@NotNull
 	private Long paymentAmount;
-	
+
 	/**
 	 * 
 	 */
 	@NotNull
 	private String primaryCreditorInstitution;
-	
+
 	/**
 	 * 
 	 */
 	private String paymentMethod;
-	
+
 	/**
 	 * 
 	 */
 	private String touchpoint;
-	
+
 	/**
 	 * 
 	 */
@@ -61,6 +61,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Gets paymentAmount
+	 * 
 	 * @return value of paymentAmount
 	 */
 	public Long getPaymentAmount() {
@@ -69,6 +70,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Sets paymentAmount
+	 * 
 	 * @param paymentAmount value of paymentAmount
 	 */
 	public void setPaymentAmount(Long paymentAmount) {
@@ -77,6 +79,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Gets primaryCreditorInstitution
+	 * 
 	 * @return value of primaryCreditorInstitution
 	 */
 	public String getPrimaryCreditorInstitution() {
@@ -85,6 +88,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Sets primaryCreditorInstitution
+	 * 
 	 * @param primaryCreditorInstitution value of primaryCreditorInstitution
 	 */
 	public void setPrimaryCreditorInstitution(String primaryCreditorInstitution) {
@@ -93,6 +97,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Gets paymentMethod
+	 * 
 	 * @return value of paymentMethod
 	 */
 	public String getPaymentMethod() {
@@ -101,6 +106,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Sets paymentMethod
+	 * 
 	 * @param paymentMethod value of paymentMethod
 	 */
 	public void setPaymentMethod(String paymentMethod) {
@@ -109,6 +115,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Gets touchpoint
+	 * 
 	 * @return value of touchpoint
 	 */
 	public String getTouchpoint() {
@@ -117,6 +124,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Sets touchpoint
+	 * 
 	 * @param touchpoint value of touchpoint
 	 */
 	public void setTouchpoint(String touchpoint) {
@@ -125,6 +133,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Gets transferList
+	 * 
 	 * @return value of transferList
 	 */
 	public List<GecTransfer> getTransferList() {
@@ -133,6 +142,7 @@ public class GecGetFeesRequest {
 
 	/**
 	 * Sets transferList
+	 * 
 	 * @param transferList value of transferList
 	 */
 	public void setTransferList(List<GecTransfer> transferList) {
