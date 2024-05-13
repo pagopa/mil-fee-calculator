@@ -17,7 +17,7 @@
 | `<ci bundle id>`                     | Codice fiscale dell'Ente Creditore che copre parte delle commissioni. |
 | `<fee>`                              | Importo delle commissioni che deve pagare l'Utente. |
 | `<gec api-key>`                      | API-key da adoperare per comunicare con GEC. |
-| `<merchant id>`                      | ID del merchant cui fa capo il terminale (solo per il canale `POS`). |
+| `<merchant id>`                      | ID del merchant cui fa capo il terminale (solo per il canale POS). |
 | `<pa tax code #1>`                   | Codice fiscale dell'Ente Creditore. Il '#1' si riferisce alla possibilità futura di gestire il pagamemto in modalità *carrello*. |
 | `<pa tax code>`                      | Codice fiscale dell'Ente Creditore. |
 | `<payment method>`                   | Metodo di pagamento edoperato sul Client. |
