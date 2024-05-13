@@ -1,0 +1,14 @@
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/AzureCommon.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/Containers/AzureContainerApp.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/Identity/AzureActiveDirectory.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/Storage/AzureBlobStorage.puml
+
+participant "Client" as Client
+
+box Multichannel Integration Layer #GhostWhite
+	participant "mil-fee-calculator\n<$AzureContainerApp{scale=0.5}>" as FeeSrv
+	participant "Authorization Server\n<$AzureActiveDirectory{scale=0.5}>" as AzureAD
+	participant "Storage\n<$AzureBlobStorage{scale=0.5}>" as AzureST
+end box
+
+participant "Gestione Evoluta\nCommissioni" as GEC

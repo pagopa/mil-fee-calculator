@@ -1,0 +1,31 @@
+@startuml
+!include_many skin.puml
+!include_many actors.puml
+
+activate Client
+
+Client -> FeeSrv++ : POST /fees
+	note left
+		!include_many request.frag
+	end note
+
+!include_many get_access_token_from_microsoft_entra_id.puml
+!include_many get_config_from_azure_blob_storage.puml
+
+FeeSrv -> GEC++ : POST /afm/node/calculator-service/v1/fees
+	note left
+		!include_many gec_request.frag
+	end note
+
+GEC --> FeeSrv-- : HTTP 200 (ok)
+	note right
+		!include_many gec_response.frag
+	end note
+
+FeeSrv --> Client-- : HTTP 200 (ok)
+	note right
+		!include_many response.frag
+	end note
+
+deactivate Client	
+@enduml

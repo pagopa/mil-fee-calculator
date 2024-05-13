@@ -1,0 +1,26 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/AzureCommon.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/AzureC4Integration.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/Containers/AzureContainerApp.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/Identity/AzureActiveDirectory.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/Storage/AzureBlobStorage.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/Azure-PlantUML/release/2-2/dist/DevOps/AzureApplicationInsights.puml
+
+Container_Ext(client, "Client", "Client Application")
+
+AzureContainerApp(feesrv, "mil-fee-calculator", "This microservice")
+AzureContainerApp(auth, "mil-auth", "MIL Authorization Server")
+AzureActiveDirectory(entraid, "Authorization Server", "Microsoft Azure Entra ID")
+AzureBlobStorage(storage, "Storage", "Microsoft Azure Blob Storage")
+AzureApplicationInsights(appinsights, "OpenTelemetry", "Microsoft Application Insights")
+
+Container_Ext(gec, "GEC", "Gestione Evoluta Commissioni")
+
+Rel(client, feesrv, "Uses")
+Rel(feesrv, auth, "Gets JWKS")
+Rel(feesrv, entraid, "Gets access token for storage")
+Rel(feesrv, storage, "Gets configuration")
+Rel(feesrv, appinsights, "Sends OpenTelemetry data")
+Rel(feesrv, gec, "Uses")
+@enduml
