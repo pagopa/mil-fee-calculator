@@ -1,18 +1,5 @@
 package it.pagopa.swclient.mil.feecalculator.it.resource;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.jwk.RSAKey;
-import io.quarkus.test.common.DevServicesContext;
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
-import it.pagopa.swclient.mil.feecalculator.util.AccessToken;
-import it.pagopa.swclient.mil.feecalculator.util.Role;
-import it.pagopa.swclient.mil.feecalculator.util.TokenGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,74 +13,89 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
+
+import io.quarkus.test.common.DevServicesContext;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import it.pagopa.swclient.mil.feecalculator.util.AccessToken;
+import it.pagopa.swclient.mil.feecalculator.util.Role;
+import it.pagopa.swclient.mil.feecalculator.util.TokenGenerator;
+
 public class IDPTestResource implements QuarkusTestResourceLifecycleManager, DevServicesContext.ContextAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(IDPTestResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(IDPTestResource.class);
 
-    TokenGenerator tokenGenerator;
+	TokenGenerator tokenGenerator;
 
-    @Override
-    public void setIntegrationTestContext(DevServicesContext devServicesContext) {
-    }
+	@Override
+	public void setIntegrationTestContext(DevServicesContext devServicesContext) {
+	}
 
-    @Override
-    public Map<String, String> start() {
+	@Override
+	public Map<String, String> start() {
 
-        String keyId = UUID.randomUUID().toString();
-        try {
-            // Generate the RSA key pair
-            KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
-            gen.initialize(2048);
-            KeyPair keyPair = gen.generateKeyPair();
+		String keyId = UUID.randomUUID().toString();
+		try {
+			// Generate the RSA key pair
+			KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+			gen.initialize(2048);
+			KeyPair keyPair = gen.generateKeyPair();
 
-            tokenGenerator = new TokenGenerator(keyId, keyPair.getPrivate());
+			tokenGenerator = new TokenGenerator(keyId, keyPair.getPrivate());
 
-            generateJwksFile(keyId, keyPair);
+			generateJwksFile(keyId, keyPair);
 
-            generateTokenResponseFile(Role.NOTICE_PAYER, Role.SLAVE_POS, Role.NODO);
+			generateTokenResponseFile(Role.NOTICE_PAYER, Role.SLAVE_POS, Role.NODO);
 
-        } catch (IOException | NoSuchAlgorithmException e) {
-           logger.error("Error while generating IDP resources", e);
-        }
+		} catch (IOException | NoSuchAlgorithmException e) {
+			logger.error("Error while generating IDP resources", e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public void inject(TestInjector testInjector) {
-        testInjector.injectIntoFields(tokenGenerator, new TestInjector.AnnotatedAndMatchesType(InjectTokenGenerator.class, TokenGenerator.class));
-    }
+	@Override
+	public void inject(TestInjector testInjector) {
+		testInjector.injectIntoFields(tokenGenerator, new TestInjector.AnnotatedAndMatchesType(InjectTokenGenerator.class, TokenGenerator.class));
+	}
 
-    private static void generateJwksFile(String kid, KeyPair keyPair) throws IOException {
+	private static void generateJwksFile(String kid, KeyPair keyPair) throws IOException {
 
-        // Convert to JWK format
-        JWK jwk = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
-                .privateKey((RSAPrivateKey) keyPair.getPrivate())
-                .keyUse(KeyUse.SIGNATURE)
-                .keyID(kid)
-                .issueTime(new Date())
-                .build();
+		// Convert to JWK format
+		JWK jwk = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+			.privateKey((RSAPrivateKey) keyPair.getPrivate())
+			.keyUse(KeyUse.SIGNATURE)
+			.keyID(kid)
+			.issueTime(new Date())
+			.build();
 
-        JWKSet jwkSet = new JWKSet(jwk);
+		JWKSet jwkSet = new JWKSet(jwk);
 
-        Files.createDirectories(Path.of("./target/generated-idp-files/"));
-        Files.writeString(Path.of("./target/generated-idp-files/jwks.json"), jwkSet.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		Files.createDirectories(Path.of("./target/generated-idp-files/"));
+		Files.writeString(Path.of("./target/generated-idp-files/jwks.json"), jwkSet.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-    }
+	}
 
-    private void generateTokenResponseFile(Role... roles) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String clientId = UUID.randomUUID().toString();
-        for (Role role : roles) {
-            String token = tokenGenerator.getToken(role, clientId);
-            AccessToken accessToken = new AccessToken(token, token, 3600);
-            Files.writeString(Path.of("./target/generated-idp-files/" + role.label + ".json"),
-                    objectMapper.writeValueAsString(accessToken),
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        }
-    }
+	private void generateTokenResponseFile(Role... roles) throws IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String clientId = UUID.randomUUID().toString();
+		for (Role role : roles) {
+			String token = tokenGenerator.getToken(role, clientId);
+			AccessToken accessToken = new AccessToken(token, token, 3600);
+			Files.writeString(Path.of("./target/generated-idp-files/" + role.label + ".json"),
+				objectMapper.writeValueAsString(accessToken),
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		}
+	}
 
-    @Override
-    public void stop() {
-    }
+	@Override
+	public void stop() {
+	}
 }

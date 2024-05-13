@@ -1,14 +1,15 @@
 package it.pagopa.swclient.mil.feecalculator.util;
 
-import io.smallrye.jwt.build.Jwt;
-import io.smallrye.jwt.build.JwtSignatureException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.security.PrivateKey;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.smallrye.jwt.build.Jwt;
+import io.smallrye.jwt.build.JwtSignatureException;
 
 public class TokenGenerator {
 
@@ -28,16 +29,16 @@ public class TokenGenerator {
 	}
 
 	public String getToken(Role role, String clientId) {
-		
+
 		String token = null;
 		try {
 			token = Jwt
-					.groups(new HashSet<>(Collections.singletonList(role.label)))
-					.subject(clientId)
-					.expiresIn(3600)
-					.jws()
-					.keyId(keyId)
-					.sign(privateKey);
+				.groups(new HashSet<>(Collections.singletonList(role.label)))
+				.subject(clientId)
+				.expiresIn(3600)
+				.jws()
+				.keyId(keyId)
+				.sign(privateKey);
 		} catch (JwtSignatureException e) {
 			logger.error("Error while generating jwt token", e);
 		}

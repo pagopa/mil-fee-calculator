@@ -16,8 +16,8 @@ public class PspConfiguration {
 	private String broker;
 
 	/**
-	 * Identifier of the channel used for the payment transaction.
-	 * Is assigned by PagoPA and is unique for the psp
+	 * Identifier of the channel used for the payment transaction. Is assigned by PagoPA and is unique
+	 * for the psp
 	 */
 	private String channel;
 
@@ -26,9 +26,9 @@ public class PspConfiguration {
 	 */
 	private String password;
 
-
 	/**
 	 * Gets psp
+	 * 
 	 * @return value of psp
 	 */
 	public String getPsp() {
@@ -37,6 +37,7 @@ public class PspConfiguration {
 
 	/**
 	 * Sets psp
+	 * 
 	 * @param psp value of psp
 	 */
 	public void setPsp(String psp) {
@@ -45,6 +46,7 @@ public class PspConfiguration {
 
 	/**
 	 * Gets broker
+	 * 
 	 * @return value of broker
 	 */
 	public String getBroker() {
@@ -53,6 +55,7 @@ public class PspConfiguration {
 
 	/**
 	 * Sets broker
+	 * 
 	 * @param broker value of broker
 	 */
 	public void setBroker(String broker) {
@@ -61,6 +64,7 @@ public class PspConfiguration {
 
 	/**
 	 * Gets channel
+	 * 
 	 * @return value of channel
 	 */
 	public String getChannel() {
@@ -69,6 +73,7 @@ public class PspConfiguration {
 
 	/**
 	 * Sets channel
+	 * 
 	 * @param channel value of channel
 	 */
 	public void setChannel(String channel) {
@@ -77,6 +82,7 @@ public class PspConfiguration {
 
 	/**
 	 * Gets password
+	 * 
 	 * @return value of password
 	 */
 	public String getPassword() {
@@ -85,6 +91,7 @@ public class PspConfiguration {
 
 	/**
 	 * Sets password
+	 * 
 	 * @param password value of password
 	 */
 	public void setPassword(String password) {

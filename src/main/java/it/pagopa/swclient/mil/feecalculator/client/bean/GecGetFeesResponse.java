@@ -8,7 +8,7 @@ public class GecGetFeesResponse {
 	 * 
 	 */
 	private Boolean belowThreshold;
-	
+
 	/**
 	 * 
 	 */
@@ -16,6 +16,7 @@ public class GecGetFeesResponse {
 
 	/**
 	 * Gets belowThreshold
+	 * 
 	 * @return value of belowThreshold
 	 */
 	public Boolean getBelowThreshold() {
@@ -24,6 +25,7 @@ public class GecGetFeesResponse {
 
 	/**
 	 * Sets belowThreshold
+	 * 
 	 * @param belowThreshold value of belowThreshold
 	 */
 	public void setBelowThreshold(Boolean belowThreshold) {
@@ -32,6 +34,7 @@ public class GecGetFeesResponse {
 
 	/**
 	 * Gets bundleOptions
+	 * 
 	 * @return value of bundleOptions
 	 */
 	public List<BundleOption> getBundleOptions() {
@@ -40,6 +43,7 @@ public class GecGetFeesResponse {
 
 	/**
 	 * Sets bundleOptions
+	 * 
 	 * @param bundleOptions value of bundleOptions
 	 */
 	public void setBundleOptions(List<BundleOption> bundleOptions) {

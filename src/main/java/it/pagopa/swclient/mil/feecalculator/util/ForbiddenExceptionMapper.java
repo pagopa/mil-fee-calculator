@@ -15,14 +15,13 @@ import jakarta.ws.rs.ext.Provider;
 @Priority(Priorities.AUTHENTICATION)
 public class ForbiddenExceptionMapper implements ExceptionMapper<ForbiddenException> {
 
-    @Context
-    ContainerRequestContext context; 
-    
-    @Override
-    public Response toResponse(ForbiddenException exception) {
-    	Log.errorf("[%s] Access forbidden - %s", ErrorCode.AUTHENTICATION_ERROR, context.getHeaders());
-        return Response.status(Response.Status.FORBIDDEN).build();
-    }
+	@Context
+	ContainerRequestContext context;
 
-	
+	@Override
+	public Response toResponse(ForbiddenException exception) {
+		Log.errorf("[%s] Access forbidden - %s", ErrorCode.AUTHENTICATION_ERROR, context.getHeaders());
+		return Response.status(Response.Status.FORBIDDEN).build();
+	}
+
 }

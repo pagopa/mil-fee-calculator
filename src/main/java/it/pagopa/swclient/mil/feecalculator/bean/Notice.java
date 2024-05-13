@@ -15,30 +15,30 @@ import jakarta.validation.constraints.Size;
  * Details of a payment notice
  */
 public class Notice {
-	
+
 	/**
 	 * Amount in euro cents
 	 */
 	@NotNull(message = "[" + ErrorCode.AMOUNT_MUST_NOT_BE_NULL + "] amount must not be null")
-	@Min(value = 1, message = "[" + ErrorCode.AMOUNT_EXCEEDED_MIN_VALUE + "] amount must not be less than {value}" )
-	@Max(value = 99999999999L, message = "[" + ErrorCode.AMOUNT_EXCEED_MAX_VALUE + "] must must not be greater than {value}" )
+	@Min(value = 1, message = "[" + ErrorCode.AMOUNT_EXCEEDED_MIN_VALUE + "] amount must not be less than {value}")
+	@Max(value = 99999999999L, message = "[" + ErrorCode.AMOUNT_EXCEED_MAX_VALUE + "] must must not be greater than {value}")
 	private Long amount;
-	
+
 	/**
 	 * Tax code of the creditor company
 	 */
 	@NotNull(message = "[" + ErrorCode.PA_TAX_CODE_MUST_NOT_BE_NULL + "] paTaxCode must not be null")
 	@Pattern(regexp = "^\\d{11}$", message = "[" + ErrorCode.PA_TAX_CODE_MUST_MATCH_REGEXP + "] paxCode must match \"{regexp}\"")
 	private String paTaxCode;
-	
+
 	/**
-	 * 	Transfer essential data
+	 * Transfer essential data
 	 */
 	@Valid
 	@NotNull(message = "[" + ErrorCode.TRANSFERS_MUST_NOT_BE_NULL + "] transfers must not be null")
 	@Size(max = 5, message = "[" + ErrorCode.TRANSFERS_EXCEEDED_MAX_VALUE + "] transfers must contain at most {max} elements")
 	private List<Transfer> transfers;
-	
+
 	/**
 	 * @return the amount
 	 */

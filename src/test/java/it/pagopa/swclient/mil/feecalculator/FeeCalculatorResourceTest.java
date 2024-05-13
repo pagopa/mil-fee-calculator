@@ -1,20 +1,12 @@
 package it.pagopa.swclient.mil.feecalculator;
 
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
-import io.quarkus.test.security.TestSecurity;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import io.smallrye.mutiny.Uni;
-import it.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
-import it.pagopa.swclient.mil.feecalculator.bean.Transfer;
-import it.pagopa.swclient.mil.feecalculator.client.AzureADRestClient;
-import it.pagopa.swclient.mil.feecalculator.client.FeeService;
-import it.pagopa.swclient.mil.feecalculator.client.MilRestService;
-import it.pagopa.swclient.mil.feecalculator.client.bean.*;
-import it.pagopa.swclient.mil.feecalculator.resource.FeeCalculatorResource;
-import it.pagopa.swclient.mil.feecalculator.util.FeeCalculatorTestData;
+import static io.restassured.RestAssured.given;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.ClientWebApplicationException;
@@ -27,12 +19,26 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
-import static io.restassured.RestAssured.given;
+import io.quarkus.test.common.http.TestHTTPEndpoint;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.security.TestSecurity;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.smallrye.mutiny.Uni;
+import it.pagopa.swclient.mil.feecalculator.bean.GetFeeRequest;
+import it.pagopa.swclient.mil.feecalculator.bean.Transfer;
+import it.pagopa.swclient.mil.feecalculator.client.AzureADRestClient;
+import it.pagopa.swclient.mil.feecalculator.client.FeeService;
+import it.pagopa.swclient.mil.feecalculator.client.MilRestService;
+import it.pagopa.swclient.mil.feecalculator.client.bean.ADAccessToken;
+import it.pagopa.swclient.mil.feecalculator.client.bean.AcquirerConfiguration;
+import it.pagopa.swclient.mil.feecalculator.client.bean.BundleOption;
+import it.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesRequest;
+import it.pagopa.swclient.mil.feecalculator.client.bean.GecGetFeesResponse;
+import it.pagopa.swclient.mil.feecalculator.resource.FeeCalculatorResource;
+import it.pagopa.swclient.mil.feecalculator.util.FeeCalculatorTestData;
 
 @QuarkusTest
 @TestHTTPEndpoint(FeeCalculatorResource.class)
@@ -46,7 +52,7 @@ class FeeCalculatorResourceTest {
 	@InjectMock
 	@RestClient
 	AzureADRestClient azureADRestClient;
-	
+
 	@InjectMock
 	MilRestService milRestService;
 
@@ -135,42 +141,43 @@ class FeeCalculatorResourceTest {
 
 		gecGetFeesResponse.setBundleOptions(Arrays.asList(bundleOption1, bundleOption2, bundleOption3, bundleOption4));
 
-
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_200() {
 
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
-				.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
-				.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
+			.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
+			.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(getFeeRequest)
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
-			
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertNotNull(response.jsonPath().getJsonObject("fee"));
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(getFeeRequest)
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
+
+		Assertions.assertEquals(200, response.statusCode());
+		Assertions.assertNotNull(response.jsonPath().getJsonObject("fee"));
 		Assertions.assertEquals(
-				gecGetFeesResponse.getBundleOptions().get(0).getTaxPayerFee(),
-				response.jsonPath().getLong("fee"));
+			gecGetFeesResponse.getBundleOptions().get(0).getTaxPayerFee(),
+			response.jsonPath().getLong("fee"));
 
 		// verify request to the mil rest client
 		ArgumentCaptor<String> acquirerIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -187,20 +194,18 @@ class FeeCalculatorResourceTest {
 
 		Assertions.assertEquals(milHeaders.get("RequestId"), gecRequestIdCaptor.getValue());
 		Assertions.assertEquals(
-				acquirerConfiguration.getPspConfigForGetFeeAndClosePayment().getPsp(),
-				gecRequestCaptor.getValue().getIdPspList().get(0).getIdPsp()
-		);
+			acquirerConfiguration.getPspConfigForGetFeeAndClosePayment().getPsp(),
+			gecRequestCaptor.getValue().getIdPspList().get(0).getIdPsp());
 		Assertions.assertEquals(getFeeRequest.getNotices().get(0).getAmount(), gecRequestCaptor.getValue().getPaymentAmount());
 		Assertions.assertEquals(getFeeRequest.getNotices().get(0).getPaTaxCode(), gecRequestCaptor.getValue().getPrimaryCreditorInstitution());
 		Assertions.assertEquals("CP", gecRequestCaptor.getValue().getPaymentMethod());
 		Assertions.assertEquals(milHeaders.get("Channel"), gecRequestCaptor.getValue().getTouchpoint());
 		int i = 0;
-		for (Transfer transfer: getFeeRequest.getNotices().get(0).getTransfers()) {
+		for (Transfer transfer : getFeeRequest.getNotices().get(0).getTransfers()) {
 			Assertions.assertEquals(transfer.getPaTaxCode(), gecRequestCaptor.getValue().getTransferList().get(i).getCreditorInstitution());
 			Assertions.assertEquals(
-					StringUtils.equals(transfer.getCategory(), StringUtils.EMPTY) ? null : transfer.getCategory(),
-					gecRequestCaptor.getValue().getTransferList().get(i).getTransferCategory()
-			);
+				StringUtils.equals(transfer.getCategory(), StringUtils.EMPTY) ? null : transfer.getCategory(),
+				gecRequestCaptor.getValue().getTransferList().get(i).getTransferCategory());
 			i++;
 		}
 
@@ -208,33 +213,35 @@ class FeeCalculatorResourceTest {
 
 	@ParameterizedTest
 	@CsvFileSource(resources = "/payment_method_mapping.csv", numLinesToSkip = 1)
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_200_paymentMethodMapping(String milPaymentMethod, String gecPaymentMethod) {
 
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 		getFeeRequest.setPaymentMethod(milPaymentMethod);
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
-				.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
-				.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
+			.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
+			.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(getFeeRequest)
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(getFeeRequest)
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(200, response.statusCode());
 		Assertions.assertNotNull(response.jsonPath().getJsonObject("fee"));
@@ -249,33 +256,35 @@ class FeeCalculatorResourceTest {
 
 	@ParameterizedTest
 	@CsvFileSource(resources = "/touchpoint_mapping.csv", numLinesToSkip = 1)
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_200_touchpointMapping(String milTouchpoint, String gecTouchpoint) {
 
 		Map<String, String> headers = FeeCalculatorTestData.getMilHeaders(true, true);
 		headers.put("Channel", milTouchpoint);
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
-				.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
-				.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
+			.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
+			.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(headers)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(headers)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(200, response.statusCode());
 		Assertions.assertNotNull(response.jsonPath().getJsonObject("fee"));
@@ -290,19 +299,21 @@ class FeeCalculatorResourceTest {
 
 	@ParameterizedTest
 	@MethodSource("it.pagopa.swclient.mil.feecalculator.util.TestUtils#provideHeaderValidationErrorCases")
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_400_invalidHeaders(Map<String, String> invalidHeaders, String errorCode) {
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(invalidHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(invalidHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(400, response.statusCode());
 		Assertions.assertEquals(1, response.jsonPath().getList("errors").size());
@@ -318,19 +329,21 @@ class FeeCalculatorResourceTest {
 
 	@ParameterizedTest
 	@MethodSource("it.pagopa.swclient.mil.feecalculator.util.TestUtils#provideGetFeeErrorCases")
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_400_invalidRequest(GetFeeRequest getFeeRequest, String errorCode) {
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(getFeeRequest)
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(getFeeRequest)
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(400, response.statusCode());
 		Assertions.assertEquals(1, response.jsonPath().getList("errors").size());
@@ -345,39 +358,42 @@ class FeeCalculatorResourceTest {
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "Nodo" })
+	@TestSecurity(user = "testUser", roles = {
+		"Nodo"
+	})
 	void testGetFee_403_forbidden() {
 
 		GetFeeRequest getFeeRequest = FeeCalculatorTestData.getFeeRequest();
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
-				.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
-				.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
+			.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
+			.thenReturn(Uni.createFrom().item(gecGetFeesResponse));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(getFeeRequest)
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(getFeeRequest)
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(403, response.statusCode());
 
 		Assertions.assertEquals(0, response.body().asString().length());
 
-
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_404_gecEmptyBundleList() {
 
 		GecGetFeesResponse gecEmptyResponse = new GecGetFeesResponse();
@@ -385,26 +401,26 @@ class FeeCalculatorResourceTest {
 		gecEmptyResponse.setBundleOptions(new ArrayList<>());
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
-				.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
-				.thenReturn(Uni.createFrom().item(gecEmptyResponse));
+			.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
+			.thenReturn(Uni.createFrom().item(gecEmptyResponse));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(500, response.statusCode());
 		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.NO_FEE_FOUND));
@@ -412,30 +428,32 @@ class FeeCalculatorResourceTest {
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_500_gecError() {
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().item(acquirerConfiguration));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().item(acquirerConfiguration));
 
 		Mockito
-				.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
-				.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
+			.when(feeService.getFees(Mockito.any(String.class), Mockito.any(GecGetFeesRequest.class)))
+			.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(500, response.statusCode());
 		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.ERROR_RETRIEVING_FEES));
@@ -443,26 +461,28 @@ class FeeCalculatorResourceTest {
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_500_pspNotFound() {
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(404)));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(500, response.statusCode());
 		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.UNKNOWN_ACQUIRER_ID));
@@ -470,26 +490,28 @@ class FeeCalculatorResourceTest {
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_500_milTimeout() {
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Mockito
-				.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().failure(new TimeoutException()));
+			.when(milRestService.getPspConfiguration(Mockito.any(String.class), Mockito.any(String.class)))
+			.thenReturn(Uni.createFrom().failure(new TimeoutException()));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(500, response.statusCode());
 		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.ERROR_CALLING_MIL_REST_SERVICES));
@@ -497,22 +519,24 @@ class FeeCalculatorResourceTest {
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_500_adTokenError() {
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(500)));
+			.thenReturn(Uni.createFrom().failure(new ClientWebApplicationException(500)));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		Assertions.assertEquals(500, response.statusCode());
 		Assertions.assertTrue(response.jsonPath().getList("errors").contains(ErrorCode.ERROR_CALLING_AZUREAD_REST_SERVICES));
@@ -520,24 +544,26 @@ class FeeCalculatorResourceTest {
 	}
 
 	@Test
-	@TestSecurity(user = "testUser", roles = { "NoticePayer" })
+	@TestSecurity(user = "testUser", roles = {
+		"NoticePayer"
+	})
 	void testGetFee_500_adTokenNull() {
 
 		azureAdAccessToken.setToken(null);
 
 		Mockito.when(azureADRestClient.getAccessToken(Mockito.any(String.class), Mockito.any(String.class)))
-				.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
+			.thenReturn((Uni.createFrom().item(azureAdAccessToken)));
 
 		Response response = given()
-				.contentType(ContentType.JSON)
-				.headers(milHeaders)
-				.and()
-				.body(FeeCalculatorTestData.getFeeRequest())
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
+			.contentType(ContentType.JSON)
+			.headers(milHeaders)
+			.and()
+			.body(FeeCalculatorTestData.getFeeRequest())
+			.when()
+			.post()
+			.then()
+			.extract()
+			.response();
 
 		azureAdAccessToken = FeeCalculatorTestData.getAzureADAccessToken();
 
