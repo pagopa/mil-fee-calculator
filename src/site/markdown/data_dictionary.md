@@ -29,5 +29,5 @@
 | `<remapped payment method>`          | Metodo di pagameto adoperato espresso secondo la codifica usata da GEC. | 
 | `<remapped touch point>`             | Touchpoint adoperato espresso secondo la codifica usata da GEC. |
 | `<request id>`                       | ID della richiesta inviata dal Client. |
-| `<storage account>`                  | Nome dello storage account contenente i valori della tripla `<psp id>`, `<psp broker id>` e `<channel id>` corrispondente al `<acquirer id>`, da adoperare per interrogare GEC. |
+| `<storage account>`                  | Nome dello storage account contenente i valori di `<psp id>`, `<psp broker id>` e `<channel id>` corrispondente al `<acquirer id>`, da adoperare per interrogare GEC. |
 | `<terminal id>`                      | ID del terminale (Client). |
