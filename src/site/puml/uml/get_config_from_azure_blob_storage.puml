@@ -1,5 +1,23 @@
 @startuml
 group Get configuration to communicate with GEC
+	FeeSrv -> AzureAD ++ : GET //${IDENTITY_ENDPOINT}//?api-version=2019-08-01\n&resource=https://storage.azure.com
+		note left
+			__header__
+			x-identity-header: //${IDENTITY_HEADER}//
+		end note
+
+	AzureAD --> FeeSrv -- : HTTP 200 (ok) 
+		note right
+			__body__
+			{
+				"token_type": "Bearer",
+				"expires_on": //don't care//,
+				"client_id": "//don't care//",
+				"resource": "//don't care//",
+				"access_token": "//<access token for storage account>//"
+			}
+		end note
+
 	FeeSrv -> AzureST ++ : GET https:////<storage account>//.blob.core.windows.net/acquirers///<acquirer id>//.json
 		note left
 			__header__
@@ -25,9 +43,9 @@ group Get configuration to communicate with GEC
 				}
 			}
 		end note
-
-	note over FeeSrv #Orange
-		On any other failure, return HTTP 500 (server error) with specific error body. 
-	end note
 end
+
+note over FeeSrv #Orange
+	On any failure, return HTTP 500 (server error) with specific error body. 
+end note
 @enduml

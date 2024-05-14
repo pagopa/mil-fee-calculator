@@ -1,0 +1,41 @@
+!pragma teoz true
+hide unlinked
+skinparam style strictuml
+skinparam maxMessageSize 200
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam sequenceLifeLineBackgroundColor GreenYellow
+autonumber "<font color='blue'><b><u>##</u></b></font>"
+
+sprite $AzureContainerApp [70x70/16z] {
+	xPY7SkCW48RP3lBxl-y5ybyirbZuUlscUGZwl6qcAvSV3ecQMRYPYj3vl9-yP52BX78PI0oSTmxnM69Iojr-7Ou6S3CHPX4pQArmtA5j7Axf3lSWk407vnF8
+	tnNBfDaAnGbVAb0vlqYOuqnPOeZpMopaBpJmEYD8j6pOL1UI7NmToXC9BQO9yBgmcWIY7j6SrWErc3cT94HY7k-quwXAiqUj3nJpOxQuIImM09OtRbKNN-mF
+	HU6H0GJ9qZMtMqgO7fea4VrqIOEa4vBcd5D_UbAPKPfZS0F7IUHpizLDayKxiDmbrOtdd1O5nkFPCgWcZFwRLnSqrazILYjSQ-3PywVQ5OPhWlxtG-zICVwO
+	hCwmW8zFi4Hktr0VhOi60IujLg2OBH1bIyMTrooWAdsh1Q9lj80_olBVqjfdIsi1Mcj_XUN-wTTP6jBuRudlO74gtsgfYeLZR_6YlhGuJrjAjnn7guE-Qu1Z
+	qFezLfyjJVkfJ0lF4ml00anY3alq0_NJ_YtKhVZUjhBq__FLf7HOBOnG3fjs28C5jBC5civnjNhug4kYlJ5B3aVyQVC0FAHiqOu5q3HzN0KfRvYAjoklAycn
+	t5IIbqxHBO926CidijccMuAWqDICBzTcoG5Yqb3HrP8jotCRWwooUco_gGFzsF5ruo18rbW0tx_XskxTDTt9w6Mu52VuCf3Wvu52S5KQ7WwdJQHNAP7wllWs
+	MrWuZGx-GkKAcIqIWPyxpCm36B_qNWa4eKsulZYGzu7Hf37byXAUViqW4RKtH2G5iPjiTFAR43CtAR-6Jm
+}
+
+sprite $AzureActiveDirectory [70x70/16z] {
+	vTZBRYin30FGw64v-VyFlhTrX25g8X0KPnUkkZfWX_CmSll2w2SGyV41nJty0uX7s25YImazHPOISZAFftB2Y4E94mJAU7yUXn9-X7WSC4RA6tkhinBIHaYP
+	SpOPSLBcRw9xPP4asenloaH6Rnva_edt4IY8DUOX1T76FAGWqa2Wz1clbNflgvNxJwAD-8QiZCOyfDolM75bAOIiQ0intuY2OS7CL8sKZ9H82gfG29h5F0bi
+	2ad120cai3HeO_mJXGBfyV1j7W9OuMotZS1eAFoMq7Uwy7CWrbJokoAIyxYWJg7G2zZdl3RMz0g5YkZw4yynrM65N-7ZETJ08sXR7LBeNMVN7UXP1NN42YNd
+	bS1TZ3Aeewpml0xZgIeStUgm4d8LsHycepgl5ASYaaPHntXU5F4NRmOQtMZUD504aLTrZEQbxq1L1uhjLpNgZu2XZc5UWx5K2jNHhBEKd9VVbNMTXEsQ5qNq
+	LaIfJiwB8juy1brB3XYOjrU7v-MKeqjC-f2rwnXwe4YxphZplFqwW-RjnQ0qY_3eW-PjnvwAd_zOWNaFOdRxmlm7
+}
+
+sprite $AzureBlobStorage [70x70/16z] {
+	xT853WCn34JH92QfzpzmPL4PHfCKTlqEy0DsmvGoX39QiY1fLeBbV2NzSwKgLL5QLZejAuCslz9XzoeDzcULgj2o8hG55GNThGHiPQKgkkmk2fk_kqexhtY0
+	_5xb0DjUnLPLZAXC_nTpaDrKA5anshoA64bQ6gI6AUK8
+}
+
+participant "Client" as Client
+
+box Multichannel Integration Layer #GhostWhite
+	participant "mil-fee-calculator\n<$AzureContainerApp,scale=0.5,color=DodgerBlue>" as FeeSrv
+	participant "Authorization Server\n<$AzureActiveDirectory,scale=0.5,color=DodgerBlue>" as AzureAD
+	participant "Storage\n<$AzureBlobStorage,scale=0.5,color=DodgerBlue>" as AzureST
+end box
+
+participant "Gestione Evoluta\nCommissioni" as GEC

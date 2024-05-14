@@ -1,6 +1,5 @@
 @startuml
-!include_many skin.puml
-!include_many actors.puml
+!include_many init.puml
 
 activate Client
 
@@ -9,7 +8,6 @@ Client -> FeeSrv++ : POST /fees
 		!include_many request.frag
 	end note
 
-!include_many get_access_token_from_microsoft_entra_id.puml
 !include_many get_config_from_azure_blob_storage.puml
 
 FeeSrv -> GEC++ : POST /afm/node/calculator-service/v1/fees
